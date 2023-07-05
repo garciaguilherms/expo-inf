@@ -1,0 +1,1 @@
+import{_ as t}from"./_plugin-vue_export-helper-c27b6911.js";import{o as r,f as o,r as n}from"./app-6ac25857.js";const s={},a={class:"inline-flex items-center px-4 py-2 bg-gray-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase"};function c(e,d){return r(),o("button",a,[n(e.$slots,"default")])}const l=t(s,[["render",c]]);export{l as P};
