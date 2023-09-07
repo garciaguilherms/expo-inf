@@ -12,13 +12,14 @@ import NavLink from '@/Components/NavLink.vue';
                         <div class="flex">
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Álbuns
+                                    Dashboard
                                 </NavLink>
-                                <NavLink :href="route('reviews.listAll')" :active="route().current('reviews.listAll')">
-                                    Avaliações
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    Seções
                                 </NavLink>
                             </div>
                         </div>
+                        <h1 class="font-semibold text-xl text-gray-800 leading-tight flex items-center">Expo-Inf</h1>
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <div class="ml-3 relative">
                                 <Dropdown align="right" width="48">
@@ -31,8 +32,8 @@ import NavLink from '@/Components/NavLink.vue';
                                         </span>
                                     </template>
                                     <template #content>
-                                        <DropdownLink :href="route('albums.create')" method="get" as="button">
-                                            Adicionar Álbum
+                                        <DropdownLink :href="route('projects.create')" method="get" as="button">
+                                            Criar Projeto
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Sair

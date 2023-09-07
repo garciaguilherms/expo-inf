@@ -3,17 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsTo;
 
-class Rating extends Model
+class Comment extends Model
 {
-    protected $table = 'ratings';
+    protected $table = 'comments';
     protected $fillable = [
-        'user_id',
+        'text',
         'project_id',
-        'type',
-        'stars',
-        'badge',
+        'user_id',
     ];
 
     public function user(): BelongsTo
@@ -25,4 +23,5 @@ class Rating extends Model
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
+
 }

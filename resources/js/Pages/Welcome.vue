@@ -20,7 +20,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Music-Box" />
+    <Head title="Expo-Inf" />
     <div
         class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-right">
@@ -48,7 +48,7 @@ defineProps({
         </div>
 
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
-            <h1 class="title">Music-Box</h1>
+            <h1 class="title">Expo-Inf</h1>
         </div>
     </div>
 </template>

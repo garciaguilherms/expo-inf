@@ -2,13 +2,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Album;
-use App\Models\Rating;
+use App\Models\Project;
+use App\Models\Section;
 use Inertia\Inertia;
 
-class RatingController extends Controller
+class SectionController extends Controller
 {
-    public function store(Request $request, Album $album): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Project $album): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
@@ -20,7 +20,7 @@ class RatingController extends Controller
             'rating' => $request->input('rating'),
         ];
 
-        Rating::updateOrCreate(
+        Section::updateOrCreate(
             ['user_id' => $data['user_id'], 'album_id' => $data['album_id']],
             $data
         );
@@ -29,7 +29,7 @@ class RatingController extends Controller
         $album->save();
 
         return response()->json([
-            'message' => 'Rating created successfully',
+            'message' => 'Section created successfully',
         ]);
     }
 

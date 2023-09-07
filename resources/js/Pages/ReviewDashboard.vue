@@ -10,7 +10,7 @@
                 <div class="bg-gray-300 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="p-6 text-gray-900">
-                            <h1 class="text-2xl font-semibold mb-4">Lista de Avaliações</h1>
+                            <h1 class="text-2xl font-semibold mb-4 ml-2">Lista de Avaliações</h1>
                             <div v-for="review in reviews" :key="review.id" class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4">
                                 <div class="p-2 text-gray-900">
                                     <div class="p-5 text-gray-900 flex items-center">
@@ -46,7 +46,7 @@
 <script>
 import StarRating from "vue-star-rating";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import AlbumsIndex from "@/Pages/Albums/Index.vue";
+import AlbumsIndex from "@/Pages/Projects/Index.vue";
 import { Head } from "@inertiajs/vue3";
 import axios from "axios";
 import moment from 'moment';
