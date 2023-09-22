@@ -19,6 +19,7 @@ class Project extends Model
         'image',
         'visibility',
         'author_id',
+        'section_id',
     ];
 
     public function sections(): BelongsToMany
@@ -44,5 +45,10 @@ class Project extends Model
     public function rating(): HasMany
     {
         return $this->hasMany(Rating::class, 'project_id');
+    }
+
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(Section::class);
     }
 }

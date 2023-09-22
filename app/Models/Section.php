@@ -20,8 +20,8 @@ class Section extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function section(): HasMany
+    public function projects(): HasMany
     {
-        return $this->hasMany(Project::class, 'section_id');
+        return $this->hasMany(Project::class);
     }
 }

@@ -14,8 +14,10 @@ class CreateProjectsTable extends Migration
             $table->text('description');
             $table->string('image')->nullable();
             $table->boolean('visibility');
+            $table->unsignedBigInteger('section_id')->nullable();
             $table->unsignedBigInteger('author_id');
-            $table->foreign('author_id')->references('id')->on('users');
+            $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
             $table->timestamps();
         });
     }

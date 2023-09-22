@@ -8,29 +8,36 @@
                         <div class="p-6 text-gray-900">
                             <form @submit.prevent="addProject">
                                 <div class="form-group">
-                                    <label for="title">Title</label>
+                                    <label for="title">Título</label>
                                     <input type="text" class="form-control" id="title" v-model="projectData.title" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="description">Description</label>
+                                    <label for="description">Descrição</label>
                                     <textarea class="form-control" id="description" v-model="projectData.description" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="image">Image</label>
+                                    <label for="image">Imagem de capa</label>
                                     <input type="text" class="form-control" id="image" v-model="projectData.image" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="author_id">Author</label>
+                                    <label for="author_id">Autores</label>
                                     <select class="form-control" id="author" v-model="projectData.author_id" required>
-                                        <option value="" disabled>Select an author</option>
+                                        <option value="" disabled>Selecione os autores</option>
                                         <option v-for="user in users" :value="user.id">{{ user.name }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="visibility">Visibility</label>
-                                    <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" required>
+                                    <label for="author_id">Seção</label>
+                                    <select class="form-control" id="author" v-model="projectData.section_id" required>
+                                        <option value="" disabled>Selecione a seção</option>
+                                        <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
+                                    </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Create Project</button>
+                                <div class="form-group">
+                                    <label for="visibility">Visível</label>
+                                    <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" :checked="projectData.visibility">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Criar projeto</button>
                             </form>
                         </div>
                     </div>
@@ -51,12 +58,16 @@ export default {
     },
     created() {
         this.$store.dispatch('users/fetchUsers');
+        this.$store.dispatch('sections/fetchSections');
     },
     computed: {
         ...mapGetters({
             projectData: 'projects/projectData',
             users: 'users/allUsers',
         }),
+        sections() {
+            return this.$store.state.sections.sections;
+        },
     },
     methods: {
         addProject() {

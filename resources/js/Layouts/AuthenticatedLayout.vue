@@ -12,9 +12,9 @@ import NavLink from '@/Components/NavLink.vue';
                         <div class="flex">
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                    Projetos
                                 </NavLink>
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink :href="route('sections.index')" :active="route().current('sections.index')">
                                     Seções
                                 </NavLink>
                             </div>
@@ -34,6 +34,9 @@ import NavLink from '@/Components/NavLink.vue';
                                     <template #content>
                                         <DropdownLink :href="route('projects.create')" method="get" as="button">
                                             Criar Projeto
+                                        </DropdownLink>
+                                        <DropdownLink :href="route('sections.create')" method="get" as="button">
+                                            Criar Seção
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Sair

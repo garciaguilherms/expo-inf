@@ -6,6 +6,18 @@
             <ul class="project-grid">
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
+                        <Dropdown align="right" width="48">
+                            <template #trigger>
+                                        <span class="flex justify-end mr-2 mb-2">
+                                            <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="md" style="color: #000000;" />
+                                        </span>
+                            </template>
+                            <template #content>
+                                <button type="button" @click="deleteProject(project.id)" class="btn btn-primary">
+                                    <font-awesome-icon :icon="['fas', 'trash']" style="color: #e34545;" /> Excluir
+                                </button>
+                            </template>
+                        </Dropdown>
                         <div @click="$inertia.visit('/projects/' + project.id)">
                             <img :src="project.image" class="project-image" />
                         </div>
@@ -19,16 +31,16 @@
                             <div class="project-avg">
                                 <font-awesome-icon icon="star" size="sm" style="color: #4a4a4a;" />
                                 <p class="project-avg-rating">0</p>
-                                <font-awesome-icon icon="certificate" size="sm" style="color: #4a4a4a;" />
-                                <p class="project-avg-rating">0</p>
                             </div>
                         </div>
-                        <a class="review-link">
-                            Deixar uma avaliação
-                        </a>
-                        <div v-if="project.author_id === $page.props.auth.user.id">
-                            <button type="button" @click="deleteProject(project.id)" class="btn btn-primary">Excluir</button>
-                        </div>
+<!--                        <a class="review-link">-->
+<!--                            Deixar uma avaliação-->
+<!--                        </a>-->
+<!--                        <div v-if="project.author_id === $page.props.auth.user.id">-->
+<!--                            <button type="button" @click="deleteProject(project.id)" class="btn btn-primary">-->
+<!--                                <font-awesome-icon :icon="['fas', 'trash']" style="color: #e34545;" /> Excluir-->
+<!--                            </button>-->
+<!--                        </div>-->
                     </div>
                 </li>
             </ul>
@@ -39,6 +51,9 @@
 <script>
 import StarRating from 'vue-star-rating';
 import axios from 'axios';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import DropdownLink from "@/Components/DropdownLink.vue";
+import Dropdown from "@/Components/Dropdown.vue";
 
 export default {
     props: {
@@ -50,6 +65,8 @@ export default {
         };
     },
     components: {
+        Dropdown, DropdownLink,
+        FontAwesomeIcon,
         StarRating,
     },
     methods: {

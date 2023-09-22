@@ -1,12 +1,10 @@
 <?php
-
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\ProviderController;
 use App\Models\Project;
-use App\Models\Section;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +14,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect']);
+Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback']);
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -44,5 +45,13 @@ Route::get('/projects/create', [ProjectController::class, 'create'])->name('proj
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
 Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+
+
+//sections routes
+Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
+Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
+Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
+Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
+Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 
 require __DIR__.'/auth.php';

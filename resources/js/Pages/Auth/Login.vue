@@ -32,7 +32,7 @@ const submit = () => {
 <template>
     <Head title="Entrar" />
     <div class="min-h-screen flex flex-col sm:justify-center items-center bg-gray-100">
-        <h1 class="text-xl">Entrar no <b>Music-Box</b></h1>
+        <h1 class="text-xl">Entrar no <b>Expo-Inf</b></h1>
         <form class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg" @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
@@ -63,6 +63,12 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.password" />
+            </div>
+
+            <div class="flex mt-4 items-center justify-center">
+                <a href="/auth/google/redirect" class="underline text-sm text-gray-600 hover:text-gray-900">
+                    Entrar com Google
+                </a>
             </div>
 
             <div class="flex items-center justify-end mt-4">
