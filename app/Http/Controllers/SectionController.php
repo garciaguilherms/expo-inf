@@ -1,36 +1,61 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Project;
 use App\Models\Section;
+use App\Models\Project;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SectionController extends Controller
 {
-    public function store(Request $request, Project $album): \Illuminate\Http\JsonResponse
+    public function index(): \Inertia\Response
     {
-        $request->validate([
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
-        ]);
-
-        $data = [
-            'user_id' => $request->user()->id,
-            'album_id' => $album->id,
-            'rating' => $request->input('rating'),
-        ];
-
-        Section::updateOrCreate(
-            ['user_id' => $data['user_id'], 'album_id' => $data['album_id']],
-            $data
-        );
-
-        $album->avg_rating = $album->ratings()->avg('rating') ?? '0.00';
-        $album->save();
-
-        return response()->json([
-            'message' => 'Section created successfully',
-        ]);
+        $sections = Section::with('projects')->get();
+        return Inertia::render('Sections/Index', ['sections' => $sections]);
     }
 
+    public function allSections(): \Illuminate\Http\JsonResponse
+    {
+        $sections = Section::all();
+
+        return response()->json($sections);
+    }
+
+    public function create(): \Inertia\Response
+    {
+        return Inertia::render('Sections/Create');
+    }
+
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'tags' => 'nullable',
+        ]);
+
+        $request->merge(['creator_id' => auth()->id()]);
+
+        Section::create($request->all());
+
+        return redirect()->route('sections.index');
+    }
+
+    public function edit(Section $section): \Inertia\Response
+    {
+        return Inertia::render('Sections/Edit', ['section' => $section]);
+    }
+
+    public function update(Request $request, Section $section): \Illuminate\Http\RedirectResponse
+    {
+        $section->update($request->all());
+        return redirect()->route('sections.show', $section);
+    }
+
+    public function destroy(Section $section): \Illuminate\Http\RedirectResponse
+    {
+        $section->delete();
+        return redirect()->route('sections.index');
+    }
 }

@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
         <div>
-            <h1 class="text-xl text-center">Registrar-se no <b>Music-Box</b></h1>
+            <h1 class="text-xl text-center">Registrar-se no <b>Expo-Inf</b></h1>
         </div>
 
         <div

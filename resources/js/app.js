@@ -5,16 +5,18 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUserSecret, faComment, faStar, faCertificate} from '@fortawesome/free-solid-svg-icons'
+import { faUserSecret, faComment, faStar, faTrash, faEllipsisV} from '@fortawesome/free-solid-svg-icons'
 import { createStore } from 'vuex'
 import projects from './store/modules/projects'
 import users from './store/modules/users'
+import sections from './store/modules/sections'
 
-library.add(faUserSecret, faComment, faStar, faCertificate)
+library.add(faUserSecret, faComment, faStar, faTrash, faEllipsisV)
 
 const store = createStore({
     modules: {
         projects,
+        sections,
         users,
     },
 })

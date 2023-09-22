@@ -3,6 +3,7 @@ const state = {
     description: '',
     image: '',
     author_id: null,
+    section_id: null,
     visibility: false,
     authors: [],
 };

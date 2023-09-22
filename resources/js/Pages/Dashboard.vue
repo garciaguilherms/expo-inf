@@ -21,6 +21,7 @@
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ProjectsIndex from '@/Pages/Projects/Index';
+import SectionsIndex from '@/Pages/Sections/Index';
 import { Head } from '@inertiajs/vue3';
 
 
@@ -28,6 +29,7 @@ export default {
     components: {
         AuthenticatedLayout,
         ProjectsIndex,
+        SectionsIndex,
         Head,
     },
     props: {

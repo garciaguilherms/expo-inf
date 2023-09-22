@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Project;
+use App\Models\ProjectSection;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -38,10 +40,13 @@ class ProjectController extends Controller
             'description' => 'required',
             'image' => 'required',
             'author_id' => 'required|exists:users,id',
+            'section_id' => 'nullable|exists:sections,id',
             'visibility' => 'required',
         ]);
 
         $project = Project::create($request->all());
+
+        $section = Section::find($request->input('section_id'));
 
         $author = User::find($request->input('author_id'));
 
@@ -49,6 +54,11 @@ class ProjectController extends Controller
             'user_id' => $request->input('author_id'),
             'project_id' => $project->id,
             'name' => $author->name,
+        ]);
+
+        ProjectSection::create([
+            'project_id' => $project->id,
+            'section_id' => $section->id
         ]);
 
         return redirect()->route('projects.index');

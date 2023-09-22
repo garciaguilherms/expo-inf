@@ -15,8 +15,8 @@ class CreateProjectSectionsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('section_id');
-            $table->foreign('project_id')->references('id')->on('projects');
-            $table->foreign('section_id')->references('id')->on('sections');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
             $table->timestamps();
         });
     }
