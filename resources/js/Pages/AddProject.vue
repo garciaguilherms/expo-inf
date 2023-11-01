@@ -3,7 +3,7 @@
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="form">
                     <div class="p-6 text-gray-900">
                         <div class="p-6 text-gray-900">
                             <form @submit.prevent="addProject">
@@ -28,7 +28,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="author_id">Seção</label>
-                                    <select class="form-control" id="author" v-model="projectData.section_id" required>
+                                    <select class="form-control" id="author" v-model="projectData.section_id">
                                         <option value="" disabled>Selecione a seção</option>
                                         <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
                                     </select>
@@ -85,17 +85,39 @@ export default {
 
 <style scoped>
 .form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-bottom: 20px;
 }
 
-.album-form-input {
-    width: 300px;
-    height: 40px;
-    margin-bottom: 10px;
-    padding: 8px;
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    width: 50%;
+    border-radius: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
 }
 </style>

@@ -14,7 +14,7 @@ class   CreateSectionsTable extends Migration
             $table->text('description');
             $table->string('tags')->nullable();
             $table->unsignedBigInteger('creator_id');
-            $table->foreign('creator_id')->references('id')->on('users');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

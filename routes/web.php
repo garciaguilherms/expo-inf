@@ -1,6 +1,9 @@
 <?php
+
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\ProviderController;
@@ -35,6 +38,8 @@ Route::get('/dashboard', function () {
         ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+//search routes
+Route::get('/projects/search/{term}', [ProjectController::class, 'search'])->name('search');
 
 //users routes
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -43,6 +48,7 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+Route::get('/projects/ranking', [ProjectController::class, 'ranking'])->name('projects.ranking');
 Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
 Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
@@ -53,5 +59,12 @@ Route::get('/all-sections', [SectionController::class, 'allSections'])->name('se
 Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
 Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
 Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+
+//comments routes
+Route::post('/projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');
+
+//rating routes
+Route::post('/projects/{project}/rating', [RatingController::class, 'store'])->name('rating.store');
+Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])->name('rating.user-rating');
 
 require __DIR__.'/auth.php';

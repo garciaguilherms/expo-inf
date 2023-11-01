@@ -26,8 +26,7 @@ class ProjectController extends Controller
 
     public function show(Project $project): Response
     {
-        $project = $project->load('authors');
-
+        $project = $project->load('authors', 'comments', 'comments.user');
         return Inertia::render('Projects/Project', [
             'project' => $project
         ]);
@@ -56,10 +55,13 @@ class ProjectController extends Controller
             'name' => $author->name,
         ]);
 
-        ProjectSection::create([
-            'project_id' => $project->id,
-            'section_id' => $section->id
-        ]);
+        if ($section) {
+            ProjectSection::create([
+                'project_id' => $project->id,
+                'section_id' => $section->id
+            ]);
+        }
+
 
         return redirect()->route('projects.index');
     }
@@ -77,6 +79,29 @@ class ProjectController extends Controller
         }
 
         $project->delete();
+    }
+
+    public function search($term): \Illuminate\Http\JsonResponse
+    {
+        if ($term) {
+            $projects = Project::with('authors')
+                ->where('title', 'like', '%' . $term . '%')
+                ->get();
+        } else {
+            $projects = Project::with('authors')->get();
+        }
+
+        return response()->json($projects);
+    }
+
+    public function ranking(): \Illuminate\Http\JsonResponse
+    {
+        $projects = Project::query()
+            ->with('authors')
+            ->orderByDesc('average_stars')
+            ->get();
+
+        return response()->json($projects);
     }
 
 }

@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="search">
+        <div class="search-box">
+            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term" />
+            <button @click="searchProjects" class="btn">Pesquisar</button>
         </div>
         <div class="project-list">
             <ul class="project-grid">
@@ -8,39 +10,49 @@
                     <div class="project-content">
                         <Dropdown align="right" width="48">
                             <template #trigger>
-                                        <span class="flex justify-end mr-2 mb-2">
-                                            <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="md" style="color: #000000;" />
-                                        </span>
+                                <span class="flex justify-end mr-2 mb-2">
+                                    <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" style="color: #000000;" />
+                                </span>
                             </template>
                             <template #content>
-                                <button type="button" @click="deleteProject(project.id)" class="btn btn-primary">
-                                    <font-awesome-icon :icon="['fas', 'trash']" style="color: #e34545;" /> Excluir
+                                <button type="button" @click="deleteProject(project.id)" class="ml-5">
+                                    Excluir
                                 </button>
                             </template>
                         </Dropdown>
                         <div @click="$inertia.visit('/projects/' + project.id)">
-                            <img :src="project.image" class="project-image" />
+                            <img :src="project.image" class="project-image"  alt="Imagem do projeto"/>
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <p class="project-artist">
+                            <p class="project-author">
+                                Criado {{ formatDate(project.created_at) }}
+                            </p>
+                            <p class="project-author">
                                 <ul>
                                     <li v-for="author in project.authors" :key="author.id">Autores: {{ author.name }}</li>
                                 </ul>
                             </p>
                             <div class="project-avg">
-                                <font-awesome-icon icon="star" size="sm" style="color: #4a4a4a;" />
-                                <p class="project-avg-rating">0</p>
+                                <star-rating
+                                    :star-size="20"
+                                    :read-only="false"
+                                    :show-rating="false"
+                                    :rating="project.userRating"
+                                    @update:rating="rating => submitRating(project.id, rating)">
+                                </star-rating>
                             </div>
                         </div>
-<!--                        <a class="review-link">-->
-<!--                            Deixar uma avaliação-->
-<!--                        </a>-->
-<!--                        <div v-if="project.author_id === $page.props.auth.user.id">-->
-<!--                            <button type="button" @click="deleteProject(project.id)" class="btn btn-primary">-->
-<!--                                <font-awesome-icon :icon="['fas', 'trash']" style="color: #e34545;" /> Excluir-->
-<!--                            </button>-->
-<!--                        </div>-->
+                        <div class="review-link">
+                            <font-awesome-icon icon="comment" size="sm" style="color: #4a4a4a; margin-right: 5px" />
+                            <button @click="showCommentBox = !showCommentBox">Deixe um comentário</button>
+                        </div>
+                        <div v-if="showCommentBox">
+                            <form @submit.prevent="addComment(project.id)">
+                                <textarea v-model="newComment" placeholder="Digite seu comentário aqui..."></textarea>
+                                <button type="submit">Enviar</button>
+                            </form>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -54,6 +66,7 @@ import axios from 'axios';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Dropdown from "@/Components/Dropdown.vue";
+import moment from 'moment';
 
 export default {
     props: {
@@ -62,12 +75,26 @@ export default {
     data() {
         return {
             projectList: this.projects,
+            showCommentBox: false,
+            newComment: '',
+            selectedRating: 0,
+            userRating: 0,
+            term: '',
         };
     },
     components: {
         Dropdown, DropdownLink,
         FontAwesomeIcon,
         StarRating,
+        moment,
+    },
+    mounted() {
+        this.projects.forEach(project => {
+            axios.get(`/projects/${project.id}/rating`)
+                .then(response => {
+                    project.userRating = response.data.rating;
+                })
+        });
     },
     methods: {
         deleteProject(id) {
@@ -81,6 +108,41 @@ export default {
                 .finally(() => {
                     this.$inertia.visit('/dashboard');
                 })
+        },
+        submitRating(projectId, rating) {
+            axios.post('/projects/' + projectId + '/rating', {
+                stars: rating,
+            })
+        },
+
+        formatDate(date) {
+            return moment(date).locale('pt-br').fromNow();
+        },
+        addComment(projectId) {
+            if (!this.newComment) {
+                console.error('O campo de texto é obrigatório.');
+                return;
+            }
+
+            axios.post('/projects/' + projectId + '/comments', {
+                text: this.newComment
+            })
+                .then((response) => {
+                    this.newComment = '';
+                    this.showCommentBox = false;
+                })
+                .catch((error) => {
+                    console.error(error.response);
+                });
+        },
+        searchProjects() {
+            axios.get('/projects/search/' + this.term)
+                .then((response) => {
+                    this.projectList = response.data;
+                })
+                .catch((error) => {
+                    console.error(error.response);
+                });
         }
     }
 };
@@ -96,9 +158,27 @@ input {
     margin-bottom: 40px;
 }
 
-.search {
+.search-box {
     display: flex;
     justify-content: center;
+    padding: 20px;
+}
+
+.search {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.btn {
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #505050;
+    color: white;
+    cursor: pointer;
+    height: 100%
 }
 
 .project-info {
@@ -116,16 +196,6 @@ input {
     justify-content: center;
 }
 
-.project-avg-rating {
-    margin-top: 3px;
-    font-size: 14px;
-    color: #888;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-right: 10px;
-}
-
 .project-grid {
     list-style: none;
     padding: 0;
@@ -139,7 +209,7 @@ input {
     background-color: #f7f7f7;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-height: 400px;
+    width: 350px;
     overflow: hidden;
 }
 
@@ -164,7 +234,7 @@ input {
     max-height: 60px;
 }
 
-.project-artist {
+.project-author {
     font-size: 14px;
     color: #888;
     white-space: nowrap;
@@ -179,6 +249,7 @@ input {
     color: #888;
     text-decoration: none;
     margin-top: 10px;
+    cursor: pointer;
 }
 
 .review-link i {

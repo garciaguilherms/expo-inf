@@ -6,6 +6,8 @@ const state = {
     section_id: null,
     visibility: false,
     authors: [],
+    created_at: '',
+    comments: [],
 };
 
 const getters = {

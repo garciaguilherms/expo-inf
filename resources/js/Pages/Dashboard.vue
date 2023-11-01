@@ -4,14 +4,20 @@
         <template>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-gray-300 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="p-6 text-gray-900">
-                            <ProjectsIndex :projects="$page.props.projects"/>
-                        </div>
-                    </div>
+        <div class="py-12 flex">
+            <div class="mx-auto sm:px-6 lg:px-8">
+                <div class="mx-auto bg-gray-300 rounded">
+                    <h1>Melhores notas:</h1>
+                    <ul>
+                        <li v-for="project in rankedProjects" :key="project.id">
+                            <h2>{{ project.title }}</h2>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mx-auto sm:px-6 lg:px-8 bg-gray-300 mr-10 rounded">
+                <div class="p-6 text-gray-900">
+                    <ProjectsIndex :projects="$page.props.projects"/>
                 </div>
             </div>
         </div>
@@ -34,6 +40,22 @@ export default {
     },
     props: {
         projects: Array,
+    },
+    data() {
+        return {
+            rankedProjects: [],
+        }
+    },
+    mounted() {
+        this.getRankedProjects();
+    },
+    methods: {
+        getRankedProjects() {
+            axios.get('/projects/ranking')
+                .then(response => {
+                    this.rankedProjects = response.data;
+                })
+        },
     },
 };
 

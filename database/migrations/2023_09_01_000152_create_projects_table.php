@@ -16,6 +16,7 @@ class CreateProjectsTable extends Migration
             $table->boolean('visibility');
             $table->unsignedBigInteger('section_id')->nullable();
             $table->unsignedBigInteger('author_id');
+            $table->decimal('average_stars', 2, 1)->default(0);
             $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
             $table->timestamps();
