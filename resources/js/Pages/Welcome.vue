@@ -47,6 +47,7 @@ defineProps({
 
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
             <h1 class="title">Expo-Inf</h1>
+            <p>Plataforma em desenvolvimento</p>
         </div>
     </div>
 </template>
