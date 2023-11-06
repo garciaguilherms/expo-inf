@@ -7,7 +7,6 @@
         <div class="py-12 flex">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="mx-auto bg-gray-300 rounded">
-                    <h1>Melhores notas:</h1>
                     <ul>
                         <li v-for="project in rankedProjects" :key="project.id">
                             <h2>{{ project.title }}</h2>
