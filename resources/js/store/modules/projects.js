@@ -4,7 +4,7 @@ const state = {
     image: '',
     author_id: null,
     section_id: null,
-    visibility: false,
+    visibility: true,
     authors: [],
     created_at: '',
     comments: [],
