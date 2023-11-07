@@ -55,6 +55,8 @@ Route::get('/sections', [SectionController::class, 'index'])->name('sections.ind
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
 Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
 Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
+Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
+Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
 Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 
 Route::post('/projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');

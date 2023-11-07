@@ -105,7 +105,7 @@ export default {
     methods: {
         deleteProject(id) {
             axios.delete('/projects/' + id)
-                .then((response) => {
+                .then(() => {
                     this.projectList = this.projectList.filter(project => project.id !== id);
                 })
                 .catch((error) => {
@@ -136,7 +136,7 @@ export default {
             axios.post('/projects/' + projectId + '/comments', {
                 text: this.newComment
             })
-                .then((response) => {
+                .then(() => {
                     this.newComment = '';
                     this.showCommentBox = false;
                 })

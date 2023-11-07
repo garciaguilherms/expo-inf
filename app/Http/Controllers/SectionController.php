@@ -42,15 +42,23 @@ class SectionController extends Controller
         return redirect()->route('sections.index');
     }
 
-    public function edit(Section $section): \Inertia\Response
+    public function edit(Section $section)
     {
-        return Inertia::render('Sections/Edit', ['section' => $section]);
+        return Inertia::render('Sections/Create', [
+            'initialSectionData' => $section,
+        ])
+            ->with('isEditing', true);
     }
 
-    public function update(Request $request, Section $section): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, Section $section)
     {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'tags' => 'nullable',
+        ]);
+
         $section->update($request->all());
-        return redirect()->route('sections.show', $section);
     }
 
     public function destroy(Section $section): \Illuminate\Http\RedirectResponse
