@@ -33,6 +33,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head} from "@inertiajs/vue3";
 import {mapGetters} from "vuex";
+import {useToastr} from "@/toastr";
 
 export default {
     components: {
@@ -48,12 +49,55 @@ export default {
         addSection() {
             this.$store.dispatch('sections/addSection', this.sectionData)
                 .then((response) => {
-                    console.log(response);
+                    useToastr().success('Seção criada com sucesso!');
                 })
                 .catch((error) => {
+                    useToastr().error('Erro ao criar seção!');
                     console.error('Error creating section:', error);
+                })
+                .finally(() => {
+                    this.$inertia.get('/dashboard');
                 });
         },
     }
 }
 </script>
+
+<style scoped>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    width: 50%;
+    border-radius: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #000000;
+    color: white;
+    cursor: pointer;
+}
+</style>

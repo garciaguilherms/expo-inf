@@ -32,10 +32,7 @@ const actions = {
                 })
                 .catch((error) => {
                     reject(error);
-                })
-                .finally(() => {
-                    this.$inertia.visit('/sections');
-                })
+                });
         });
     },
     addSection({ commit }, sectionData) {
@@ -47,7 +44,7 @@ const actions = {
                 })
                 .catch((error) => {
                     reject(error);
-                });
+                })
         });
     }
 };

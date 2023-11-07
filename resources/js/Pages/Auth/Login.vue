@@ -67,7 +67,7 @@ const submit = () => {
 
             <div class="flex mt-4 items-center justify-center">
                 <a href="/auth/google/redirect" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Entrar com Google
+                    Entrar com e-mail institucional (@inf)
                 </a>
             </div>
 
