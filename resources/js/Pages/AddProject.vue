@@ -33,10 +33,10 @@
                                         <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label for="visibility">Visível</label>
-                                    <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" :checked="projectData.visibility">
-                                </div>
+<!--                                <div class="form-group">-->
+<!--                                    <label for="visibility">Visível</label>-->
+<!--                                    <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" :checked="projectData.visibility" disabled>-->
+<!--                                </div>-->
                                 <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
                                 <button v-else type="submit" class="btn btn-primary">Atualizar projeto</button>
                             </form>
@@ -56,7 +56,7 @@ import { useToastr } from '@/toastr.js';
 export default {
     data() {
         return {
-            projectData: this.isEditing ? this.initialProjectData : {},
+            projectData: this.isEditing ? this.initialProjectData : {visibility: true},
         };
     },
     props: ['initialProjectData', 'isEditing'],
