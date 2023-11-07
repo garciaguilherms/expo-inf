@@ -58,11 +58,20 @@ const actions = {
                 .catch((error) => {
                     reject(error);
                 })
-                .finally(() => {
-                    this.$inertia.visit('/dashboard');
-                })
         });
     },
+    updateProject({ commit }, projectData) {
+        return new Promise((resolve, reject) => {
+            axios.put('/projects/' + projectData.id, projectData)
+                .then((response) => {
+                    commit('updateProjectData', response.data);
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        });
+    }
 };
 
 export default {

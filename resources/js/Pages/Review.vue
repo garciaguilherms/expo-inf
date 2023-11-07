@@ -25,6 +25,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
 import { Head } from '@inertiajs/vue3';
+import { useToastr } from "@/toastr";
 
 export default {
     components: {
@@ -45,7 +46,7 @@ export default {
             axios.post(`/albums/${this.album.id}/reviews`, {
                 review: this.review,
             }).then(() => {
-                this.$inertia.visit('/dashboard');
+                useToastr().success('Projeto criado com sucesso!');
             });
         },
     },

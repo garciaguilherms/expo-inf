@@ -8,7 +8,9 @@ use App\Models\Project;
 use App\Models\ProjectSection;
 use App\Models\Section;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -63,12 +65,35 @@ class ProjectController extends Controller
         }
 
 
-        return redirect()->route('projects.index');
+        return redirect(RouteServiceProvider::HOME);
     }
 
     public function create(): Response
     {
-        return Inertia::render('AddProject');
+        return Inertia::render('AddProject')
+            ->with('isEditing', false);
+    }
+
+    public function edit(Project $project)
+    {
+        return Inertia::render('AddProject', [
+            'initialProjectData' => $project,
+        ])
+            ->with('isEditing', true);
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'image' => 'required',
+            'author_id' => 'required|exists:users,id',
+            'section_id' => 'nullable|exists:sections,id',
+            'visibility' => 'required',
+        ]);
+
+        $project->update($request->all());
     }
 
     public function destroy(Project $project): void

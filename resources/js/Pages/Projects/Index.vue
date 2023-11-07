@@ -10,14 +10,19 @@
                     <div class="project-content">
                         <Dropdown align="right" width="48">
                             <template #trigger>
-                                <span class="flex justify-end mr-2 mb-2">
-                                    <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" style="color: #000000;" />
-                                </span>
+                            <span class="dropdown-trigger">
+                                <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />
+                            </span>
                             </template>
                             <template #content>
-                                <button type="button" @click="deleteProject(project.id)" class="ml-5">
-                                    Excluir
-                                </button>
+                                <div style="display: flex; flex-direction: column;">
+                                    <button type="button" @click="deleteProject(project.id)" class="delete-button">
+                                        Excluir
+                                    </button>
+                                    <button type="button" @click="updateProject(project.id)" class="delete-button">
+                                        Editar
+                                    </button>
+                                </div>
                             </template>
                         </Dropdown>
                         <div @click="$inertia.visit('/projects/' + project.id)">
@@ -45,9 +50,9 @@
                         </div>
                         <div class="review-link">
                             <font-awesome-icon icon="comment" size="sm" style="color: #4a4a4a; margin-right: 5px" />
-                            <button @click="showCommentBox = !showCommentBox">Deixe um comentário</button>
+                            <button @click="showCommentBox[project.id] = !showCommentBox[project.id]">Deixe um comentário</button>
                         </div>
-                        <div v-if="showCommentBox">
+                        <div v-if="showCommentBox[project.id]">
                             <form @submit.prevent="addComment(project.id)">
                                 <textarea v-model="newComment" placeholder="Digite seu comentário aqui..."></textarea>
                                 <button type="submit">Enviar</button>
@@ -67,6 +72,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import moment from 'moment';
+import {useToastr} from "@/toastr";
 
 export default {
     props: {
@@ -75,7 +81,7 @@ export default {
     data() {
         return {
             projectList: this.projects,
-            showCommentBox: false,
+            showCommentBox: [],
             newComment: '',
             selectedRating: 0,
             userRating: 0,
@@ -106,8 +112,11 @@ export default {
                     console.error('Error deleting project:', error);
                 })
                 .finally(() => {
-                    this.$inertia.visit('/dashboard');
+                    useToastr().success('Projeto excluído com sucesso!');
                 })
+        },
+        updateProject(id) {
+            this.$inertia.get('/projects/' + id + '/edit');
         },
         submitRating(projectId, rating) {
             axios.post('/projects/' + projectId + '/rating', {
@@ -151,6 +160,14 @@ export default {
 
 <style scoped>
 
+.dropdown-trigger {
+    display: flex;
+    justify-content: flex-end;
+    color: #000000;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
 input {
     width: 40%;
     border: none;
@@ -175,10 +192,10 @@ input {
     padding: 10px;
     border-radius: 5px;
     border: none;
-    background-color: #505050;
+    background-color: #000000;
     color: white;
     cursor: pointer;
-    height: 100%
+    height: 100%;
 }
 
 .project-info {
@@ -255,4 +272,13 @@ input {
 .review-link i {
     margin-right: 5px;
 }
+
+.delete-button {
+    max-width: 100%;
+    cursor: pointer;
+    margin: 5px;
+    font-weight: bold;
+}
+
 </style>
+

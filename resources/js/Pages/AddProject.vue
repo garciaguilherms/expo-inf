@@ -6,7 +6,7 @@
                 <div class="form">
                     <div class="p-6 text-gray-900">
                         <div class="p-6 text-gray-900">
-                            <form @submit.prevent="addProject">
+                            <form @submit.prevent="isEditing ? updateProject() : addProject()">
                                 <div class="form-group">
                                     <label for="title">Título</label>
                                     <input type="text" class="form-control" id="title" v-model="projectData.title" required>
@@ -16,7 +16,7 @@
                                     <textarea class="form-control" id="description" v-model="projectData.description" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="image">Imagem de capa</label>
+                                    <label for="image">Imagem de capa (URL)</label>
                                     <input type="text" class="form-control" id="image" v-model="projectData.image" required>
                                 </div>
                                 <div class="form-group">
@@ -37,7 +37,8 @@
                                     <label for="visibility">Visível</label>
                                     <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" :checked="projectData.visibility">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Criar projeto</button>
+                                <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
+                                <button v-else type="submit" class="btn btn-primary">Atualizar projeto</button>
                             </form>
                         </div>
                     </div>
@@ -50,11 +51,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { mapGetters } from 'vuex';
+import { useToastr } from '@/toastr.js';
 
 export default {
+    data() {
+        return {
+            projectData: this.isEditing ? this.initialProjectData : {},
+        };
+    },
+    props: ['initialProjectData', 'isEditing'],
     components: {
         AuthenticatedLayout,
         Head,
+
     },
     created() {
         this.$store.dispatch('users/fetchUsers');
@@ -72,11 +81,27 @@ export default {
     methods: {
         addProject() {
             this.$store.dispatch('projects/addProject', this.projectData)
-                .then((response) => {
-                    console.log(response);
+                .then(() => {
+                    useToastr().success('Projeto criado com sucesso!');
                 })
-                .catch((error) => {
-                    console.error('Error creating project:', error);
+                .catch(() => {
+                    useToastr().error('Erro ao criar projeto!');
+                })
+                .finally(() => {
+                    this.$inertia.get('/dashboard');
+                });
+        },
+        updateProject() {
+            this.$store.dispatch('projects/updateProject', this.projectData)
+                .then(() => {
+                    this.$store.commit('projects/setProjectData', this.projectData);
+                    useToastr().success('Projeto atualizado com sucesso!');
+                })
+                .catch(() => {
+                    useToastr().error('Erro ao atualizar projeto!');
+                })
+                .finally(() => {
+                    this.$inertia.get('/dashboard');
                 });
         },
     },
@@ -116,7 +141,7 @@ export default {
     padding: 10px 20px;
     border-radius: 5px;
     border: none;
-    background-color: #007BFF;
+    background-color: #000000;
     color: white;
     cursor: pointer;
 }

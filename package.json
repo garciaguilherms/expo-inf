@@ -29,6 +29,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.3",
         "moment": "^2.29.4",
+        "toastr": "^2.1.4",
         "vue-moment": "^4.1.0",
         "vue-star-rating": "^2.1.0",
         "vue3-star-ratings": "^2.0.5",

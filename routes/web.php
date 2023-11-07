@@ -38,32 +38,27 @@ Route::get('/dashboard', function () {
         ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-//search routes
 Route::get('/projects/search/{term}', [ProjectController::class, 'search'])->name('search');
 
-//users routes
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
-//projects routes
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 Route::get('/projects/ranking', [ProjectController::class, 'ranking'])->name('projects.ranking');
 Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
 Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
-
-//sections routes
 Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
 Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
 Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
 Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 
-//comments routes
 Route::post('/projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');
 
-//rating routes
 Route::post('/projects/{project}/rating', [RatingController::class, 'store'])->name('rating.store');
 Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])->name('rating.user-rating');
 
