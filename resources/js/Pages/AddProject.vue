@@ -71,7 +71,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            projectData: 'projects/projectData',
+            compoutedProjectData: 'projects/projectData',
             users: 'users/allUsers',
         }),
         sections() {
@@ -94,7 +94,7 @@ export default {
         updateProject() {
             this.$store.dispatch('projects/updateProject', this.projectData)
                 .then(() => {
-                    this.$store.commit('projects/setProjectData', this.projectData);
+                    this.$store.commit('projects/updateProjectData', this.projectData);
                     useToastr().success('Projeto atualizado com sucesso!');
                 })
                 .catch(() => {

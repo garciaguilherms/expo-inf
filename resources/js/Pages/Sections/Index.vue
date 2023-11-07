@@ -14,7 +14,7 @@
                                 <button type="button" @click="deleteSection(section.id)" class="delete-button">
                                     Excluir
                                 </button>
-                                <button type="button" @click="deleteSection(section.id)" class="delete-button">
+                                <button type="button" @click="updateSection(section.id)" class="delete-button">
                                     Editar
                                 </button>
                             </div>
@@ -70,6 +70,9 @@ export default {
                     useToastr().success('Secão excluída com sucesso!');
                     this.$inertia.get('/sections');
                 })
+        },
+        updateSection(id) {
+            this.$inertia.visit('/sections/' + id + '/edit');
         }
     }
 };

@@ -694,18 +694,11 @@ select {
   margin-left: auto;
   margin-right: auto;
 }
-.mx-8 {
-  margin-left: 2rem;
-  margin-right: 2rem;
-}
 .-ml-px {
   margin-left: -1px;
 }
 .-mt-px {
   margin-top: -1px;
-}
-.mb-2 {
-  margin-bottom: 0.5rem;
 }
 .mb-4 {
   margin-bottom: 1rem;
@@ -877,9 +870,6 @@ select {
 }
 .cursor-default {
   cursor: default;
-}
-.cursor-pointer {
-  cursor: pointer;
 }
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));

@@ -6,7 +6,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="p-6 text-gray-900">
-                            <form @submit.prevent="addSection()">
+                            <form @submit.prevent="isEditing ? updateSection() : addSection()">
                                 <div class="form-group">
                                     <label for="title">Título</label>
                                     <input type="text" class="form-control" id="title" v-model="sectionData.title" required>
@@ -19,7 +19,8 @@
                                     <label for="tag">Tag</label>
                                     <input type="text" class="form-control" id="tag" v-model="sectionData.tags" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Criar seção</button>
+                                <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar seção</button>
+                                <button v-else type="submit" class="btn btn-primary">Atualizar seção</button>
                             </form>
                         </div>
                     </div>
@@ -40,6 +41,12 @@ export default {
         AuthenticatedLayout,
         Head
     },
+    data() {
+        return {
+            sectionData: this.isEditing ? this.initialSectionData : {},
+        };
+    },
+    props: ['initialSectionData', 'isEditing'],
     computed: {
         ...mapGetters({
             sectionData: 'sections/sectionData',
@@ -48,7 +55,7 @@ export default {
     methods: {
         addSection() {
             this.$store.dispatch('sections/addSection', this.sectionData)
-                .then((response) => {
+                .then(() => {
                     useToastr().success('Seção criada com sucesso!');
                 })
                 .catch((error) => {
@@ -56,9 +63,22 @@ export default {
                     console.error('Error creating section:', error);
                 })
                 .finally(() => {
-                    this.$inertia.get('/dashboard');
+                    this.$inertia.get('/sections');
                 });
         },
+        updateSection() {
+            this.$store.dispatch('sections/updateSection', this.sectionData)
+                .then(() => {
+                    this.$store.commit('sections/updateSectionData', this.sectionData);
+                    useToastr().success('Seção atualizada com sucesso!');
+                })
+                .catch(() => {
+                    useToastr().error('Erro ao atualizar seção!');
+                })
+                .finally(() => {
+                    this.$inertia.get('/sections');
+                })
+        }
     }
 }
 </script>
@@ -81,15 +101,6 @@ export default {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: white;
-    width: 50%;
-    border-radius: 10px;
 }
 
 .btn {

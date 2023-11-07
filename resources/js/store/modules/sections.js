@@ -46,6 +46,18 @@ const actions = {
                     reject(error);
                 })
         });
+    },
+    updateSection({ commit }, sectionData) {
+        return new Promise((resolve, reject) => {
+            axios.put('/sections/' + sectionData.id, sectionData)
+                .then((response) => {
+                    commit('setSections', response.data);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
     }
 };
 
