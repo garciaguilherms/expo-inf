@@ -8,7 +8,7 @@
             <ul class="project-grid">
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
-                        <Dropdown align="right" width="48" v-if="project.author_id === $page.props.auth.user.id">
+                        <Dropdown align="right" width="48" v-if="project.created_by === $page.props.auth.user.id">
                             <template #trigger>
                             <span class="dropdown-trigger">
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />

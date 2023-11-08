@@ -13,6 +13,7 @@ class Section extends Model
         'title',
         'description',
         'tags',
+        'created_by',
         'creator_id',
     ];
     public function user(): BelongsTo

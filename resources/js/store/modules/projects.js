@@ -7,6 +7,7 @@ const state = {
     visibility: true,
     authors: [],
     created_at: '',
+    created_by: '',
     comments: [],
 };
 
@@ -22,6 +23,9 @@ const mutations = {
         state.author_id = data.author_id;
         state.authors = data.authors;
         state.visibility = data.visibility;
+        state.created_at = data.created_at;
+        state.created_by = data.created_by;
+        state.comments = data.comments;
     },
     resetProjectData(state) {
         state.title = '';
@@ -30,6 +34,9 @@ const mutations = {
         state.author_id = null;
         state.visibility = false;
         state.authors = [];
+        state.created_at = '';
+        state.created_by = '';
+        state.comments = [];
     },
     addNewProject(state, projectData) {
         state.title = projectData.title;
@@ -38,6 +45,9 @@ const mutations = {
         state.author_id = projectData.author_id;
         state.visibility = projectData.visibility;
         state.authors = projectData.authors;
+        state.created_at = projectData.created_at;
+        state.created_by = projectData.created_by;
+        state.comments = projectData.comments;
     }
 };
 
