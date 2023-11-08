@@ -3,7 +3,7 @@
         <div class="section-container">
             <ul class="section-grid">
                 <li v-for="section in sectionList" :key="section.id" class="section-item">
-                    <Dropdown align="right" width="48" v-if="section.author_id === $page.props.auth.user.id">
+                    <Dropdown align="right" width="48" v-if="section.created_by === $page.props.auth.user.id">
                         <template #trigger>
                             <span class="dropdown-trigger">
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />

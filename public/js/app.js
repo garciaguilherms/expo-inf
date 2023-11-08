@@ -21128,7 +21128,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
       key: project.id,
       "class": "project-item"
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [project.author_id === _ctx.$page.props.auth.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Dropdown, {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [project.created_by === _ctx.$page.props.auth.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Dropdown, {
       key: 0,
       align: "right",
       width: "48"
@@ -21642,7 +21642,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
           key: section.id,
           "class": "section-item"
-        }, [section.author_id === _ctx.$page.props.auth.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Dropdown, {
+        }, [section.created_by === _ctx.$page.props.auth.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Dropdown, {
           key: 0,
           align: "right",
           width: "48"
@@ -21888,6 +21888,7 @@ var state = {
   visibility: true,
   authors: [],
   created_at: '',
+  created_by: '',
   comments: []
 };
 var getters = {
@@ -21903,6 +21904,9 @@ var mutations = {
     state.author_id = data.author_id;
     state.authors = data.authors;
     state.visibility = data.visibility;
+    state.created_at = data.created_at;
+    state.created_by = data.created_by;
+    state.comments = data.comments;
   },
   resetProjectData: function resetProjectData(state) {
     state.title = '';
@@ -21911,6 +21915,9 @@ var mutations = {
     state.author_id = null;
     state.visibility = false;
     state.authors = [];
+    state.created_at = '';
+    state.created_by = '';
+    state.comments = [];
   },
   addNewProject: function addNewProject(state, projectData) {
     state.title = projectData.title;
@@ -21919,6 +21926,9 @@ var mutations = {
     state.author_id = projectData.author_id;
     state.visibility = projectData.visibility;
     state.authors = projectData.authors;
+    state.created_at = projectData.created_at;
+    state.created_by = projectData.created_by;
+    state.comments = projectData.comments;
   }
 };
 var actions = {
@@ -21977,7 +21987,10 @@ __webpack_require__.r(__webpack_exports__);
 var state = {
   title: '',
   description: '',
-  sections: []
+  sections: [],
+  created_by: '',
+  created_at: '',
+  projects: []
 };
 var getters = {
   sectionData: function sectionData(state) {
@@ -21989,6 +22002,8 @@ var mutations = {
     state.title = data.title;
     state.description = data.description;
     state.projects = data.projects;
+    state.created_by = data.created_by;
+    state.created_at = data.created_at;
   },
   setSections: function setSections(state, sections) {
     state.sections = sections;

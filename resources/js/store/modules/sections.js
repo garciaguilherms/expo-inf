@@ -2,6 +2,9 @@ const state = {
     title: '',
     description: '',
     sections: [],
+    created_by: '',
+    created_at: '',
+    projects: [],
 };
 
 const getters = {
@@ -13,6 +16,8 @@ const mutations = {
         state.title = data.title;
         state.description = data.description;
         state.projects = data.projects;
+        state.created_by = data.created_by;
+        state.created_at = data.created_at;
     },
     setSections(state, sections) {
         state.sections = sections;

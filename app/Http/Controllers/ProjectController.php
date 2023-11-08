@@ -45,7 +45,7 @@ class ProjectController extends Controller
             'visibility' => 'required',
         ]);
 
-        $project = Project::create($request->all());
+        $project = Project::create(array_merge($request->all(), ['created_by' => auth()->id()]));
 
         $section = Section::find($request->input('section_id'));
 

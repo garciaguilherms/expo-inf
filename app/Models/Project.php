@@ -20,6 +20,7 @@ class Project extends Model
         'visibility',
         'author_id',
         'section_id',
+        'created_by',
     ];
 
     public function sections(): BelongsToMany

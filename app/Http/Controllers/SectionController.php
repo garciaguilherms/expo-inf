@@ -37,7 +37,7 @@ class SectionController extends Controller
 
         $request->merge(['creator_id' => auth()->id()]);
 
-        Section::create($request->all());
+        Section::create(array_merge($request->all(), ['created_by' => auth()->id()]));
 
         return redirect()->route('sections.index');
     }
