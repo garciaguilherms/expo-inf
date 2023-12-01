@@ -36,30 +36,61 @@ Route::get('/dashboard', function () {
         ->with([
             'projects' => $projects,
         ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 Route::get('/projects/search/{term}', [ProjectController::class, 'search'])->name('search');
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+Route::get('/projects/create', [ProjectController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.create');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 Route::get('/projects/ranking', [ProjectController::class, 'ranking'])->name('projects.ranking');
-Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
-Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
-Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+Route::post('/projects', [ProjectController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.store');
+Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.edit');
+Route::put('/projects/{project}', [ProjectController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.update');
+Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.destroy');
 
 Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
-Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
-Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
-Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
-Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
-Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+Route::get('/sections/create', [SectionController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('sections.create');
+Route::post('/sections', [SectionController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('sections.store');
+Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('sections.edit');
+Route::put('/sections/{section}', [SectionController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('sections.update');
+Route::delete('/sections/{section}', [SectionController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('sections.destroy');
 
 Route::post('/projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');
+
+// Rota para criar um link de convite
+Route::post('/projects/{project}/invite', [ProjectController::class, 'createInvite'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.createInvite');
+
+// Rota para aceitar um link de convite
+Route::get('/invite/{token}', [ProjectController::class, 'acceptInvite'])
+    ->middleware(['auth', 'verified'])
+    ->name('projects.acceptInvite');
+
 
 Route::post('/projects/{project}/rating', [RatingController::class, 'store'])->name('rating.store');
 Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])->name('rating.user-rating');

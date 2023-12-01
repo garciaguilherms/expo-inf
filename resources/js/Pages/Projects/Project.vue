@@ -16,8 +16,9 @@
                             </div>
                             <h2 class="project-title">{{ project.title }}</h2>
                             <p class="project-description">{{ project.description }}</p>
+                            <p class="project-artist">Autores:</p>
                             <div v-for="author in project.authors">
-                                <p class="project-artist">Autores: {{ author.name }}</p>
+                                <p class="project-artist">{{ author.name }}</p>
                             </div>
                         </div>
                         <div class="project-comment-box">
