@@ -20,9 +20,9 @@
                                     <input type="text" class="form-control" id="image" v-model="projectData.image" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="author_id">Autores</label>
+                                    <label for="author_id">Autor (É possível adicionar mais autores utilizando o link para convite)</label>
                                     <select class="form-control" id="author" v-model="projectData.author_id" required>
-                                        <option value="" disabled>Selecione os autores</option>
+                                        <option value="" disabled>Selecione o autor</option>
                                         <option v-for="user in users" :value="user.id">{{ user.name }}</option>
                                     </select>
                                 </div>
@@ -33,10 +33,6 @@
                                         <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
                                     </select>
                                 </div>
-<!--                                <div class="form-group">-->
-<!--                                    <label for="visibility">Visível</label>-->
-<!--                                    <input type="checkbox" class="form-control" id="visibility" v-model="projectData.visibility" :checked="projectData.visibility" disabled>-->
-<!--                                </div>-->
                                 <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
                                 <button v-else type="submit" class="btn btn-primary">Atualizar projeto</button>
                             </form>

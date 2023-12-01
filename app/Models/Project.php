@@ -52,4 +52,10 @@ class Project extends Model
     {
         return $this->belongsTo(Section::class);
     }
+
+    public function invites(): HasMany
+    {
+        return $this->hasMany(Invite::class);
+    }
+
 }
