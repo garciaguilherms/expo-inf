@@ -149,7 +149,6 @@ class ProjectController extends Controller
     {
         if (auth()->guest()) {
             session()->put('invite_token', $token);
-
             return redirect()->route('login');
         }
 
@@ -174,6 +173,5 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.show', $author->project);
     }
-
 }
 
