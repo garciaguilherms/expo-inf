@@ -1,8 +1,3 @@
-<script setup>
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-</script>
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
@@ -20,7 +15,7 @@ import NavLink from '@/Components/NavLink.vue';
                             </div>
                         </div>
                         <h1 class="font-semibold text-xl text-gray-800 leading-tight flex items-center">Expo-Inf</h1>
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
+                        <div class="hidden sm:flex sm:items-center sm:ml-6" v-if="$page.props.auth.user">
                             <div class="ml-3 relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -45,6 +40,18 @@ import NavLink from '@/Components/NavLink.vue';
                                 </Dropdown>
                             </div>
                         </div>
+                        <div class="hidden sm:flex sm:items-center sm:ml-6" v-else>
+                                <Link
+                                    :href="route('login')"
+                                    class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                                >Entrar
+                                </Link>
+                                <Link
+                                    :href="route('register')"
+                                    class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                                >Registrar-se
+                                </Link>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -54,3 +61,10 @@ import NavLink from '@/Components/NavLink.vue';
         </div>
     </div>
 </template>
+
+<script setup>
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import NavLink from '@/Components/NavLink.vue';
+import {Link} from "@inertiajs/vue3";
+</script>

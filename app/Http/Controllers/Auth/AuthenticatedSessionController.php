@@ -50,4 +50,16 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($request->session()->has('invite_token')) {
+            $token = $request->session()->pull('invite_token');
+
+            return redirect()->route('projects.acceptInvite', ['token' => $token]);
+        }
+
+        return redirect()->intended(RouteServiceProvider::HOME);
+    }
+
 }

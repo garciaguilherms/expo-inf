@@ -8,7 +8,7 @@
             <ul class="project-grid">
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
-                        <Dropdown align="right" width="48" v-if="project.created_by === $page.props.auth.user.id">
+                        <Dropdown align="right" width="48" v-if="$page.props.auth.user && project.created_by === $page.props.auth.user.id">
                             <template #trigger>
                             <span class="dropdown-trigger">
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />
@@ -22,6 +22,9 @@
                                     <button type="button" @click="updateProject(project.id)" class="delete-button">
                                         Editar
                                     </button>
+                                    <button type="button" @click="generateInviteLink(project.id)" class="delete-button">
+                                        Gerar link de convite
+                                    </button>
                                 </div>
                             </template>
                         </Dropdown>
@@ -34,8 +37,8 @@
                                 Criado {{ formatDate(project.created_at) }}
                             </p>
                             <p class="project-author">
-                                <ul>
-                                    <li v-for="author in project.authors" :key="author.id">Autores: {{ author.name }}</li>
+                                <ul>Autores:
+                                    <li v-for="author in project.authors" :key="author.id">{{ author.name }}</li>
                                 </ul>
                             </p>
                             <div class="project-avg">
@@ -103,6 +106,18 @@ export default {
         });
     },
     methods: {
+        generateInviteLink(id) {
+            axios.post(`/projects/${id}/invite`, this.projectData)
+                .then((response) => {
+                    const inviteLink = response.data.link;
+                    console.log(inviteLink);
+                    useToastr().success('Convite copiado com sucesso!');
+                    navigator.clipboard.writeText(inviteLink);
+                })
+                .catch(() => {
+                    useToastr().error('Erro ao gerar link de convite!');
+                })
+        },
         deleteProject(id) {
             axios.delete('/projects/' + id)
                 .then(() => {

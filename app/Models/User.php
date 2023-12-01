@@ -56,4 +56,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProjectSection::class, 'author_id');
     }
+
+    public function invites(): HasMany
+    {
+        return $this->hasMany(Invite::class);
+    }
+
 }
