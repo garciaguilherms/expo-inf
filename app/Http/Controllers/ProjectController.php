@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Author;
+use App\Models\Invite;
 use App\Models\Project;
 use App\Models\ProjectSection;
 use App\Models\Section;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -127,6 +128,45 @@ class ProjectController extends Controller
             ->get();
 
         return response()->json($projects);
+    }
+
+    public function createInvite(Project $project): \Illuminate\Http\JsonResponse
+    {
+        $token = Str::random();
+
+        Invite::create([
+            'project_id' => $project->id,
+            'user_id' => auth()->user()->id,
+            'token' => $token
+        ]);
+
+        return response()->json([
+            'link' => url('/invite/' . $token),
+        ]);
+    }
+
+    public function acceptInvite($token): RedirectResponse
+    {
+        $invite = Invite::where('token', $token)->firstOrFail();
+        $user = auth()->user();
+
+        $existingAuthor = Author::where('project_id', $invite->project_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($existingAuthor) {
+            Inertia::render('Projects/Project', [
+                'project' => $invite->project
+            ]);
+        }
+
+        $author = new Author();
+        $author->project_id = $invite->project_id;
+        $author->user_id = $user->id;
+        $author->name = $user->name;
+        $author->save();
+
+        return redirect()->route('projects.show', $author->project);
     }
 
 }
