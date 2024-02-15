@@ -9,15 +9,32 @@
                             <form @submit.prevent="isEditing ? updateSection() : addSection()">
                                 <div class="form-group">
                                     <label for="title">Título</label>
-                                    <input type="text" class="form-control" id="title" v-model="sectionData.title" required>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="title"
+                                        v-model="sectionData.title"
+                                        required
+                                    />
                                 </div>
                                 <div class="form-group">
                                     <label for="description">Descrição</label>
-                                    <textarea class="form-control" id="description" v-model="sectionData.description" required></textarea>
+                                    <textarea
+                                        class="form-control"
+                                        id="description"
+                                        v-model="sectionData.description"
+                                        required
+                                    ></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="tag">Tag</label>
-                                    <input type="text" class="form-control" id="tag" v-model="sectionData.tags" required>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="tag"
+                                        v-model="sectionData.tags"
+                                        required
+                                    />
                                 </div>
                                 <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar seção</button>
                                 <button v-else type="submit" class="btn btn-primary">Atualizar seção</button>
@@ -31,10 +48,10 @@
 </template>
 
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head} from "@inertiajs/vue3";
-import {mapGetters} from "vuex";
-import {useToastr} from "@/toastr";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import { Head } from '@inertiajs/vue3'
+import { mapGetters } from 'vuex'
+import { useToastr } from '@/toastr'
 
 export default {
     components: {
@@ -43,40 +60,42 @@ export default {
     },
     data() {
         return {
-            sectionData: this.isEditing ? this.initialSectionData : {},
-        };
+            sectionData: this.isEditing ? this.initialSectionData : {}
+        }
     },
     props: ['initialSectionData', 'isEditing'],
     computed: {
         ...mapGetters({
-            sectionData: 'sections/sectionData',
-        }),
+            sectionData: 'sections/sectionData'
+        })
     },
     methods: {
         addSection() {
-            this.$store.dispatch('sections/addSection', this.sectionData)
+            this.$store
+                .dispatch('sections/addSection', this.sectionData)
                 .then(() => {
-                    useToastr().success('Seção criada com sucesso!');
+                    useToastr().success('Seção criada com sucesso!')
                 })
-                .catch((error) => {
-                    useToastr().error('Erro ao criar seção!');
-                    console.error('Error creating section:', error);
+                .catch(error => {
+                    useToastr().error('Erro ao criar seção!')
+                    console.error('Error creating section:', error)
                 })
                 .finally(() => {
-                    this.$inertia.get('/sections');
-                });
+                    this.$inertia.get('/sections')
+                })
         },
         updateSection() {
-            this.$store.dispatch('sections/updateSection', this.sectionData)
+            this.$store
+                .dispatch('sections/updateSection', this.sectionData)
                 .then(() => {
-                    this.$store.commit('sections/updateSectionData', this.sectionData);
-                    useToastr().success('Seção atualizada com sucesso!');
+                    this.$store.commit('sections/updateSectionData', this.sectionData)
+                    useToastr().success('Seção atualizada com sucesso!')
                 })
                 .catch(() => {
-                    useToastr().error('Erro ao atualizar seção!');
+                    useToastr().error('Erro ao atualizar seção!')
                 })
                 .finally(() => {
-                    this.$inertia.get('/sections');
+                    this.$inertia.get('/sections')
                 })
         }
     }
@@ -93,7 +112,7 @@ export default {
     margin-bottom: 5px;
 }
 
-.form-group input[type="text"],
+.form-group input[type='text'],
 .form-group textarea,
 .form-group select {
     width: 100%;

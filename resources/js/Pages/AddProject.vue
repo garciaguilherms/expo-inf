@@ -9,18 +9,32 @@
                             <form @submit.prevent="isEditing ? updateProject() : addProject()">
                                 <div class="form-group">
                                     <label for="title">Título</label>
-                                    <input type="text" class="form-control" id="title" v-model="projectData.title" required>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="title"
+                                        v-model="projectData.title"
+                                        required
+                                    />
                                 </div>
                                 <div class="form-group">
                                     <label for="description">Descrição</label>
-                                    <textarea class="form-control" id="description" v-model="projectData.description" required></textarea>
+                                    <TipTap v-model="projectData.description" />
                                 </div>
                                 <div class="form-group">
                                     <label for="image">Imagem de capa (URL)</label>
-                                    <input type="text" class="form-control" id="image" v-model="projectData.image" required>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="image"
+                                        v-model="projectData.image"
+                                        required
+                                    />
                                 </div>
                                 <div class="form-group">
-                                    <label for="author_id">Autor (É possível adicionar mais autores utilizando o link para convite)</label>
+                                    <label for="author_id"
+                                        >Autor (É possível adicionar mais autores utilizando o link para convite)</label
+                                    >
                                     <select class="form-control" id="author" v-model="projectData.author_id" required>
                                         <option value="" disabled>Selecione o autor</option>
                                         <option v-for="user in users" :value="user.id">{{ user.name }}</option>
@@ -30,7 +44,9 @@
                                     <label for="author_id">Seção</label>
                                     <select class="form-control" id="author" v-model="projectData.section_id">
                                         <option value="" disabled>Selecione a seção</option>
-                                        <option v-for="section in sections" :value="section.id">{{ section.title }}</option>
+                                        <option v-for="section in sections" :value="section.id">
+                                            {{ section.title }}
+                                        </option>
                                     </select>
                                 </div>
                                 <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
@@ -43,23 +59,25 @@
         </div>
     </AuthenticatedLayout>
 </template>
+
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { mapGetters } from 'vuex';
 import { useToastr } from '@/toastr.js';
+import TipTap from '@/Components/TipTap.vue';
 
 export default {
     data() {
         return {
-            projectData: this.isEditing ? this.initialProjectData : {visibility: true},
+            projectData: this.isEditing ? this.initialProjectData : { visibility: true },
         };
     },
     props: ['initialProjectData', 'isEditing'],
     components: {
+        TipTap,
         AuthenticatedLayout,
         Head,
-
     },
     created() {
         this.$store.dispatch('users/fetchUsers');
@@ -67,7 +85,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            compoutedProjectData: 'projects/projectData',
+            computedProjectData: 'projects/projectData',
             users: 'users/allUsers',
         }),
         sections() {
@@ -76,7 +94,8 @@ export default {
     },
     methods: {
         addProject() {
-            this.$store.dispatch('projects/addProject', this.projectData)
+            this.$store
+                .dispatch('projects/addProject', this.projectData)
                 .then(() => {
                     useToastr().success('Projeto criado com sucesso!');
                 })
@@ -88,7 +107,8 @@ export default {
                 });
         },
         updateProject() {
-            this.$store.dispatch('projects/updateProject', this.projectData)
+            this.$store
+                .dispatch('projects/updateProject', this.projectData)
                 .then(() => {
                     this.$store.commit('projects/updateProjectData', this.projectData);
                     useToastr().success('Projeto atualizado com sucesso!');
@@ -101,7 +121,7 @@ export default {
                 });
         },
     },
-}
+};
 </script>
 
 <style scoped>
@@ -114,7 +134,7 @@ export default {
     margin-bottom: 5px;
 }
 
-.form-group input[type="text"],
+.form-group input[type='text'],
 .form-group textarea,
 .form-group select {
     width: 100%;

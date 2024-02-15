@@ -7,15 +7,18 @@
                     <div class="p-6 text-gray-900">
                         <div class="p-6 text-gray-900 flex justify-end flex-col">
                             <div class="image-ranking-box">
-                                <img :src="project.image" class="project-image"  alt="Imagem do projeto"/>
+                                <img :src="project.image" class="project-image" alt="Imagem do projeto" />
                                 <div>
                                     <div class="average-rating">
-                                        <font-awesome-icon :icon="['fas', 'star']" size="2xl" style="color: #f2c445;" /> {{ project.average_stars }}
+                                        <font-awesome-icon :icon="['fas', 'star']" size="2xl" style="color: #f2c445" />
+                                        {{ project.average_stars }}
                                     </div>
                                 </div>
                             </div>
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <p class="project-description">{{ project.description }}</p>
+                            <p class="project-description">
+                                {{ project.description }}
+                            </p>
                             <p class="project-artist">Autores:</p>
                             <div v-for="author in project.authors">
                                 <p class="project-artist">{{ author.name }}</p>
@@ -23,7 +26,7 @@
                         </div>
                         <div class="project-comment-box">
                             <h2 class="text-black font-bold">Comentários</h2>
-                            <div class="comment-box" v-for ="comment in project.comments">
+                            <div class="comment-box" v-for="comment in project.comments">
                                 <p>{{ comment.user.name }}</p>
                                 <p>{{ comment.text }}</p>
                             </div>
@@ -36,22 +39,21 @@
 </template>
 
 <script>
-import {Head} from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Head } from '@inertiajs/vue3'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 
 export default {
     components: {
         AuthenticatedLayout,
-        Head,
+        Head
     },
     props: {
         project: Object
-    },
+    }
 }
 </script>
 
 <style scoped>
-
 .project-image {
     width: 50%;
     height: 50%;
@@ -117,6 +119,4 @@ export default {
     text-overflow: ellipsis;
     margin-right: 10px;
 }
-
-
 </style>

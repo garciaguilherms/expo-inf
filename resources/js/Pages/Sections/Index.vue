@@ -3,14 +3,18 @@
         <div class="section-container">
             <ul class="section-grid">
                 <li v-for="section in sectionList" :key="section.id" class="section-item">
-                    <Dropdown align="right" width="48" v-if="$page.props.auth.user && section.created_by === $page.props.auth.user.id">
+                    <Dropdown
+                        align="right"
+                        width="48"
+                        v-if="$page.props.auth.user && section.created_by === $page.props.auth.user.id"
+                    >
                         <template #trigger>
                             <span class="dropdown-trigger">
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />
                             </span>
                         </template>
                         <template #content>
-                            <div style="display: flex; flex-direction: column;">
+                            <div style="display: flex; flex-direction: column">
                                 <button type="button" @click="deleteSection(section.id)" class="delete-button">
                                     Excluir
                                 </button>
@@ -23,15 +27,21 @@
                     <div class="section-content">
                         <div class="section-info">
                             <h2 class="section-title">{{ section.title }}</h2>
-                            <p class="section-subtitle">{{ section.description }}</p>
+                            <p class="section-subtitle">
+                                {{ section.description }}
+                            </p>
                         </div>
                         <ul class="projects-list">
                             <li v-for="project in section.projects" :key="project.id" class="project-card">
                                 <div class="project-content" @click="$inertia.visit('/projects/' + project.id)">
-                                    <div class="project-title">{{ project.title }}</div>
-                                    <div class="project-description">{{ project.description }}</div>
+                                    <div class="project-title">
+                                        {{ project.title }}
+                                    </div>
+                                    <div class="project-description">
+                                        {{ project.description }}
+                                    </div>
                                 </div>
-                                <img :src="project.image" class="project-image"  alt="Capa do projeto"/>
+                                <img :src="project.image" class="project-image" alt="Capa do projeto" />
                             </li>
                         </ul>
                     </div>
@@ -42,41 +52,41 @@
 </template>
 
 <script>
-import axios from 'axios';
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import Dropdown from "@/Components/Dropdown.vue";
-import {useToastr} from "@/toastr";
+import axios from 'axios'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import Dropdown from '@/Components/Dropdown.vue'
+import { useToastr } from '@/toastr'
 
 export default {
-    components: {Dropdown, AuthenticatedLayout},
+    components: { Dropdown, AuthenticatedLayout },
     props: {
-        sections: Array,
+        sections: Array
     },
     data() {
         return {
-            sectionList: this.sections,
-        };
+            sectionList: this.sections
+        }
     },
     methods: {
         deleteSection(id) {
-            axios.delete('/sections/' + id)
+            axios
+                .delete('/sections/' + id)
                 .then(() => {
-                    this.sectionList = this.sectionList.filter(section => section.id !== id);
+                    this.sectionList = this.sectionList.filter(section => section.id !== id)
                 })
-                .catch((error) => {
-                    console.error('Error deleting project:', error);
+                .catch(error => {
+                    console.error('Error deleting project:', error)
                 })
                 .finally(() => {
-                    useToastr().success('Secão excluída com sucesso!');
-                    this.$inertia.get('/sections');
+                    useToastr().success('Secão excluída com sucesso!')
+                    this.$inertia.get('/sections')
                 })
         },
         updateSection(id) {
-            this.$inertia.visit('/sections/' + id + '/edit');
+            this.$inertia.visit('/sections/' + id + '/edit')
         }
     }
-};
-
+}
 </script>
 
 <style scoped>

@@ -1,37 +1,40 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import InputError from '@/Components/InputError.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
+import TextInput from '@/Components/TextInput.vue'
+import { Head, useForm } from '@inertiajs/vue3'
 
 defineProps({
     canResetPassword: {
-        type: Boolean,
+        type: Boolean
     },
     status: {
-        type: String,
-    },
-});
+        type: String
+    }
+})
 
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
-});
+    remember: false
+})
 
 const submit = () => {
     form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
-};
+        onFinish: () => form.reset('password')
+    })
+}
 </script>
 
 <template>
     <Head title="Entrar" />
     <div class="min-h-screen flex flex-col sm:justify-center items-center bg-gray-100">
         <h1 class="text-xl">Entrar no <b>Expo-Inf</b></h1>
-        <form class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg" @submit.prevent="submit">
+        <form
+            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg"
+            @submit.prevent="submit"
+        >
             <div>
                 <InputLabel for="email" value="Email" />
 

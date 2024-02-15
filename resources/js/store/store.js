@@ -7,7 +7,7 @@ const store = createStore({
     modules: {
         projects,
         sections,
-        users,
-    },
+        users
+    }
 })
 export default store

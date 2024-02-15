@@ -10,8 +10,18 @@
                             <h2 class="album-title">{{ album.title }}</h2>
                             <p class="album-artist">{{ album.artist }}</p>
                             <form @submit.prevent="handleSubmit">
-                                <textarea v-model="review" rows="5" class="texarea-review" placeholder="Deixe sua avaliação"></textarea>
-                                <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg">Enviar</button>
+                                <textarea
+                                    v-model="review"
+                                    rows="5"
+                                    class="texarea-review"
+                                    placeholder="Deixe sua avaliação"
+                                ></textarea>
+                                <button
+                                    type="submit"
+                                    class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg"
+                                >
+                                    Enviar
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -22,15 +32,15 @@
 </template>
 
 <script>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import axios from 'axios';
-import { Head } from '@inertiajs/vue3';
-import { useToastr } from "@/toastr";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import axios from 'axios'
+import { Head } from '@inertiajs/vue3'
+import { useToastr } from '@/toastr'
 
 export default {
     components: {
         AuthenticatedLayout,
-        Head,
+        Head
     },
     props: {
         album: Object,
@@ -38,23 +48,24 @@ export default {
     },
     data() {
         return {
-            review: '',
-        };
+            review: ''
+        }
     },
     methods: {
         handleSubmit() {
-            axios.post(`/albums/${this.album.id}/reviews`, {
-                review: this.review,
-            }).then(() => {
-                useToastr().success('Projeto criado com sucesso!');
-            });
-        },
-    },
-};
+            axios
+                .post(`/albums/${this.album.id}/reviews`, {
+                    review: this.review
+                })
+                .then(() => {
+                    useToastr().success('Projeto criado com sucesso!')
+                })
+        }
+    }
+}
 </script>
 
 <style scoped>
-
 .album-image {
     width: 20%;
     height: 20%;
@@ -82,5 +93,4 @@ export default {
     padding: 10px;
     margin-top: 10px;
 }
-
 </style>
