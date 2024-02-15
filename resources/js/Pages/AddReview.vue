@@ -11,8 +11,18 @@
                                 <h2 class="album-title">{{ album.title }}</h2>
                                 <p class="album-artist">{{ album.artist }}</p>
                                 <form @submit.prevent="handleSubmit">
-                                    <textarea v-model="review" rows="5" class="texarea-review" placeholder="Deixe sua avaliação"></textarea>
-                                    <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg">Enviar</button>
+                                    <textarea
+                                        v-model="review"
+                                        rows="5"
+                                        class="texarea-review"
+                                        placeholder="Deixe sua avaliação"
+                                    ></textarea>
+                                    <button
+                                        type="submit"
+                                        class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg"
+                                    >
+                                        Enviar
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -24,11 +34,8 @@
 </template>
 
 <script setup>
-
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head} from "@inertiajs/vue3";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import { Head } from '@inertiajs/vue3'
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

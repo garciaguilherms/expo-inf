@@ -20,8 +20,10 @@
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
-                                            <button type="button"
-                                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none">
+                                            <button
+                                                type="button"
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none"
+                                            >
                                                 {{ $page.props.auth.user.name }}
                                             </button>
                                         </span>
@@ -41,16 +43,16 @@
                             </div>
                         </div>
                         <div class="hidden sm:flex sm:items-center sm:ml-6" v-else>
-                                <Link
-                                    :href="route('login')"
-                                    class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                            <Link
+                                :href="route('login')"
+                                class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                                 >Entrar
-                                </Link>
-                                <Link
-                                    :href="route('register')"
-                                    class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                            </Link>
+                            <Link
+                                :href="route('register')"
+                                class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                                 >Registrar-se
-                                </Link>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -63,8 +65,8 @@
 </template>
 
 <script setup>
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import {Link} from "@inertiajs/vue3";
+import Dropdown from '@/Components/Dropdown.vue'
+import DropdownLink from '@/Components/DropdownLink.vue'
+import NavLink from '@/Components/NavLink.vue'
+import { Link } from '@inertiajs/vue3'
 </script>

@@ -1,17 +1,18 @@
 <template>
     <div>
         <div class="search-box">
-            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term" />
+            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term"/>
             <button @click="searchProjects" class="btn">Pesquisar</button>
         </div>
         <div class="project-list">
             <ul class="project-grid">
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
-                        <Dropdown align="right" width="48" v-if="$page.props.auth.user && project.created_by === $page.props.auth.user.id">
+                        <Dropdown align="right" width="48"
+                                  v-if="$page.props.auth.user && project.created_by === $page.props.auth.user.id">
                             <template #trigger>
                             <span class="dropdown-trigger">
-                                <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />
+                                <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm"/>
                             </span>
                             </template>
                             <template #content>
@@ -29,7 +30,7 @@
                             </template>
                         </Dropdown>
                         <div @click="$inertia.visit('/projects/' + project.id)">
-                            <img :src="project.image" class="project-image"  alt="Imagem do projeto"/>
+                            <img :src="project.image" class="project-image" alt="Imagem do projeto"/>
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
@@ -52,8 +53,10 @@
                             </div>
                         </div>
                         <div class="review-link">
-                            <font-awesome-icon icon="comment" size="sm" style="color: #4a4a4a; margin-right: 5px" />
-                            <button @click="showCommentBox[project.id] = !showCommentBox[project.id]">Deixe um comentário</button>
+                            <font-awesome-icon icon="comment" size="sm" style="color: #4a4a4a; margin-right: 5px"/>
+                            <button @click="showCommentBox[project.id] = !showCommentBox[project.id]">Deixe um
+                                comentário
+                            </button>
                         </div>
                         <div v-if="showCommentBox[project.id]">
                             <form @submit.prevent="addComment(project.id)">

@@ -1,50 +1,49 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3'
 
 defineProps({
     canLogin: {
-        type: Boolean,
+        type: Boolean
     },
     canRegister: {
-        type: Boolean,
+        type: Boolean
     },
     laravelVersion: {
         type: String,
-        required: true,
+        required: true
     },
     phpVersion: {
         type: String,
-        required: true,
-    },
-});
+        required: true
+    }
+})
 </script>
 
 <template>
     <Head title="Expo-Inf" />
     <div
-        class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-red-500 selection:text-white">
+        class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 selection:bg-red-500 selection:text-white"
+    >
         <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right">
             <Link
                 :href="route('dashboard')"
                 class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-            >Dashboard
+                >Dashboard
             </Link>
             <Link
                 :href="route('login')"
                 class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-            >Entrar
+                >Entrar
             </Link>
             <Link
                 :href="route('register')"
                 class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-            >Registrar-se
+                >Registrar-se
             </Link>
         </div>
         <div class="title-box">
             <h1 class="title">Expo-Inf</h1>
-            <p class="footer">
-                plataforma em desenvolvimento
-            </p>
+            <p class="footer">plataforma em desenvolvimento</p>
         </div>
     </div>
 </template>

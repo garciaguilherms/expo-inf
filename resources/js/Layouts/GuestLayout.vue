@@ -1,6 +1,6 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue'
+import { Link } from '@inertiajs/vue3'
 </script>
 
 <template>
@@ -9,9 +9,7 @@ import { Link } from '@inertiajs/vue3';
             <h1 class="text-xl text-center">Registrar-se no <b>Expo-Inf</b></h1>
         </div>
 
-        <div
-            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg"
-        >
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
             <slot />
         </div>
     </div>
