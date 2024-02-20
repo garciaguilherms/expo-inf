@@ -253,8 +253,7 @@ input {
 }
 
 .project-image {
-    max-width: 100%;
-    height: auto;
+    height: 300px;
     border-radius: 8px;
     object-fit: cover;
     margin-bottom: 10px;
