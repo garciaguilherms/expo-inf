@@ -1,22 +1,22 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
     canLogin: {
-        type: Boolean
+        type: Boolean,
     },
     canRegister: {
-        type: Boolean
+        type: Boolean,
     },
     laravelVersion: {
         type: String,
-        required: true
+        required: true,
     },
     phpVersion: {
         type: String,
-        required: true
-    }
-})
+        required: true,
+    },
+});
 </script>
 
 <template>
@@ -27,12 +27,12 @@ defineProps({
         <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right">
             <Link
                 :href="route('dashboard')"
-                class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                 >Dashboard
             </Link>
             <Link
                 :href="route('login')"
-                class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                class="ml-5 font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                 >Entrar
             </Link>
             <Link

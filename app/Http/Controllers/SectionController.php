@@ -4,18 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use App\Models\Project;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SectionController extends Controller
 {
-    public function index(): \Inertia\Response
+    public function index(): Response
     {
-        $sections = Section::with('projects')->get();
+        $sections = Section::with('projects')
+            ->with('projects.authors')
+            ->get();
+
         return Inertia::render('Sections/Index', ['sections' => $sections]);
     }
 
-    public function allSections(): \Illuminate\Http\JsonResponse
+    public function allSections(): JsonResponse
     {
         $sections = Section::all();
 
@@ -27,7 +33,7 @@ class SectionController extends Controller
         return Inertia::render('Sections/Create');
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'title' => 'required',
@@ -42,7 +48,7 @@ class SectionController extends Controller
         return redirect()->route('sections.index');
     }
 
-    public function edit(Section $section)
+    public function edit(Section $section): Response
     {
         return Inertia::render('Sections/Create', [
             'initialSectionData' => $section,
@@ -50,7 +56,7 @@ class SectionController extends Controller
             ->with('isEditing', true);
     }
 
-    public function update(Request $request, Section $section)
+    public function update(Request $request, Section $section): void
     {
         $request->validate([
             'title' => 'required',
@@ -61,7 +67,7 @@ class SectionController extends Controller
         $section->update($request->all());
     }
 
-    public function destroy(Section $section): \Illuminate\Http\RedirectResponse
+    public function destroy(Section $section): RedirectResponse
     {
         $section->delete();
         return redirect()->route('sections.index');

@@ -1,30 +1,30 @@
 <script setup>
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, useForm } from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: {
-        type: Boolean
+        type: Boolean,
     },
     status: {
-        type: String
-    }
-})
+        type: String,
+    },
+});
 
 const form = useForm({
     email: '',
     password: '',
-    remember: false
-})
+    remember: false,
+});
 
 const submit = () => {
     form.post(route('login'), {
-        onFinish: () => form.reset('password')
-    })
-}
+        onFinish: () => form.reset('password'),
+    });
+};
 </script>
 
 <template>
@@ -67,8 +67,8 @@ const submit = () => {
             </div>
 
             <div class="flex mt-4 items-center justify-center">
-                <a href="/auth/google/redirect" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Entrar com e-mail institucional (@inf)
+                <a :href="route('register')" class="underline text-sm text-gray-600 hover:text-gray-900">
+                    Não tem uma conta?
                 </a>
             </div>
 

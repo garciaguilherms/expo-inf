@@ -38,11 +38,13 @@ Route::get('/dashboard', function () {
         ]);
 })->name('dashboard');
 
-Route::get('/projects/search/{term}', [ProjectController::class, 'search'])->name('search');
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
 
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-
-Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projects/search/{term}', [ProjectController::class, 'search'])
+    ->name('search');
+Route::get('/projects', [ProjectController::class, 'index'])
+    ->name('projects.index');
 Route::get('/projects/create', [ProjectController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('projects.create');
@@ -79,20 +81,17 @@ Route::delete('/sections/{section}', [SectionController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('sections.destroy');
 
-Route::post('/projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');
-
-// Rota para criar um link de convite
+Route::post('/projects/{project}/comments', [CommentController::class, 'store'])
+    ->name('comments.store');
 Route::post('/projects/{project}/invite', [ProjectController::class, 'createInvite'])
     ->middleware(['auth', 'verified'])
     ->name('projects.createInvite');
-
-// Rota para aceitar um link de convite
 Route::get('/invite/{token}', [ProjectController::class, 'acceptInvite'])
     ->middleware(['auth', 'verified'])
     ->name('projects.acceptInvite');
-
-
-Route::post('/projects/{project}/rating', [RatingController::class, 'store'])->name('rating.store');
-Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])->name('rating.user-rating');
+Route::post('/projects/{project}/rating', [RatingController::class, 'store'])
+    ->name('rating.store');
+Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])
+    ->name('rating.user-rating');
 
 require __DIR__.'/auth.php';

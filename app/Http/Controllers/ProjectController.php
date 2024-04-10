@@ -10,6 +10,7 @@ use App\Models\ProjectSection;
 use App\Models\Section;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -41,6 +42,9 @@ class ProjectController extends Controller
             'title' => 'required',
             'description' => 'required',
             'image' => 'required',
+            'background_image' => 'nullable',
+            'background_color' => 'nullable',
+            'font_family' => 'nullable',
             'author_id' => 'required|exists:users,id',
             'section_id' => 'nullable|exists:sections,id',
             'visibility' => 'required',
@@ -75,7 +79,7 @@ class ProjectController extends Controller
             ->with('isEditing', false);
     }
 
-    public function edit(Project $project)
+    public function edit(Project $project): Response
     {
         return Inertia::render('AddProject', [
             'initialProjectData' => $project,
@@ -83,12 +87,15 @@ class ProjectController extends Controller
             ->with('isEditing', true);
     }
 
-    public function update(Request $request, Project $project)
+    public function update(Request $request, Project $project): void
     {
         $request->validate([
             'title' => 'required',
             'description' => 'required',
             'image' => 'required',
+            'background_image' => 'nullable',
+            'background_color' => 'nullable',
+            'font_family' => 'nullable',
             'author_id' => 'required|exists:users,id',
             'section_id' => 'nullable|exists:sections,id',
             'visibility' => 'required',
@@ -107,7 +114,7 @@ class ProjectController extends Controller
         $project->delete();
     }
 
-    public function search($term): \Illuminate\Http\JsonResponse
+    public function search($term): JsonResponse
     {
         if ($term) {
             $projects = Project::with('authors')
@@ -120,7 +127,7 @@ class ProjectController extends Controller
         return response()->json($projects);
     }
 
-    public function ranking(): \Illuminate\Http\JsonResponse
+    public function ranking(): JsonResponse
     {
         $projects = Project::query()
             ->with('authors')
@@ -130,7 +137,7 @@ class ProjectController extends Controller
         return response()->json($projects);
     }
 
-    public function createInvite(Project $project): \Illuminate\Http\JsonResponse
+    public function createInvite(Project $project): JsonResponse
     {
         $token = Str::random();
 
