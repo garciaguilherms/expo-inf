@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout>
         <div class="section-container">
-            <ul class="section-grid">
+            <ul class="section-grid justify-content-center">
                 <li v-for="section in sectionList" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
@@ -38,7 +38,7 @@
                                         {{ project.title }}
                                     </div>
                                     <div class="project-description">
-                                        {{ project.description }}
+                                        Autores: {{ project.authors.map(author => author.name).join(', ') }}
                                     </div>
                                 </div>
                                 <img :src="project.image" class="project-image" alt="Capa do projeto" />
@@ -52,47 +52,49 @@
 </template>
 
 <script>
-import axios from 'axios'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import Dropdown from '@/Components/Dropdown.vue'
-import { useToastr } from '@/toastr'
+import axios from 'axios';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import { useToastr } from '@/toastr';
 
 export default {
     components: { Dropdown, AuthenticatedLayout },
     props: {
-        sections: Array
+        sections: Array,
     },
     data() {
         return {
-            sectionList: this.sections
-        }
+            sectionList: this.sections,
+        };
     },
     methods: {
         deleteSection(id) {
             axios
                 .delete('/sections/' + id)
                 .then(() => {
-                    this.sectionList = this.sectionList.filter(section => section.id !== id)
+                    this.sectionList = this.sectionList.filter(section => section.id !== id);
                 })
                 .catch(error => {
-                    console.error('Error deleting project:', error)
+                    console.error('Error deleting project:', error);
                 })
                 .finally(() => {
-                    useToastr().success('Secão excluída com sucesso!')
-                    this.$inertia.get('/sections')
-                })
+                    useToastr().success('Secão excluída com sucesso!');
+                    this.$inertia.get('/sections');
+                });
         },
         updateSection(id) {
-            this.$inertia.visit('/sections/' + id + '/edit')
-        }
-    }
-}
+            this.$inertia.visit('/sections/' + id + '/edit');
+        },
+    },
+};
 </script>
 
 <style scoped>
 .section-container {
     display: flex;
     justify-content: center;
+    align-items: center;
+    margin: 0 auto;
     padding: 20px;
 }
 

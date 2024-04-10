@@ -1,7 +1,16 @@
 <template>
-    <Head title="Dashboard"/>
+    <Head title="Dashboard" />
     <AuthenticatedLayout>
-        <div class="py-12">
+        <div
+            class="py-12"
+            :style="{
+                backgroundColor: project.background_image ? '' : project.background_color,
+                fontFamily: project.font_family || 'sans-serif',
+                backgroundImage: project.background_image ? `url(${project.background_image})` : '',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+            }"
+        >
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
@@ -16,7 +25,11 @@
                                 </div>
                             </div>
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <div class="my-8 prose max-w-none" style="word-wrap: break-word" v-html="project.description" ></div>
+                            <div
+                                class="my-8 prose max-w-none"
+                                style="word-wrap: break-word"
+                                v-html="project.description"
+                            ></div>
                             <p class="project-artist">Autores:</p>
                             <div v-for="author in project.authors">
                                 <p class="project-artist">{{ author.name }}</p>
@@ -37,18 +50,18 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import { Head } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 export default {
     components: {
         AuthenticatedLayout,
-        Head
+        Head,
     },
     props: {
-        project: Object
-    }
-}
+        project: Object,
+    },
+};
 </script>
 <style scoped>
 .project-image {
