@@ -21,6 +21,16 @@ class SectionController extends Controller
         return Inertia::render('Sections/Index', ['sections' => $sections]);
     }
 
+    public function show(Section $section): Response
+    {
+        $section->load('projects');
+
+        return Inertia::render('Sections/Show', [
+            'section' => $section,
+            'projects' => $section->projects()->with('authors')->get(),
+        ]);
+    }
+
     public function allSections(): JsonResponse
     {
         $sections = Section::all();
