@@ -71,6 +71,8 @@ Route::get('/sections/create', [SectionController::class, 'create'])
 Route::post('/sections', [SectionController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('sections.store');
+Route::get('/sections/{section}', [SectionController::class, 'show'])
+    ->name('sections.show');
 Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])
     ->middleware(['auth', 'verified'])
     ->name('sections.edit');

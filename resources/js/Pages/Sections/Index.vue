@@ -2,7 +2,12 @@
     <AuthenticatedLayout>
         <div class="section-container">
             <ul class="section-grid justify-content-center">
-                <li v-for="section in sectionList" :key="section.id" class="section-item">
+                <li
+                    v-for="section in sectionList"
+                    :key="section.id"
+                    class="section-item"
+                    @click="$inertia.visit('/sections/' + section.id)"
+                >
                     <Dropdown
                         align="right"
                         width="48"
@@ -26,7 +31,9 @@
                     </Dropdown>
                     <div class="section-content">
                         <div class="section-info">
-                            <h2 class="section-title">{{ section.title }}</h2>
+                            <h2 class="section-title" @click="$inertia.visit('/sections/' + section.id)">
+                                {{ section.title }}
+                            </h2>
                             <p class="section-subtitle">
                                 {{ section.description }}
                             </p>
@@ -114,6 +121,7 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 20px;
+    cursor: pointer;
 }
 
 .dropdown-trigger {
