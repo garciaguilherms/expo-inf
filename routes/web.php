@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback']);
 
-Route::get('/', function () {
+Route::get('/homepage', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -30,7 +30,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
+Route::get('/', function () {
     $projects = Project::with('authors')->get();
     return Inertia::render('Dashboard')
         ->with([
