@@ -145,7 +145,7 @@ export default {
                     useToastr().error('Erro ao criar projeto!');
                 })
                 .finally(() => {
-                    this.$inertia.get('/dashboard');
+                    this.$inertia.get('/');
                 });
         },
         updateProject() {
@@ -159,7 +159,7 @@ export default {
                     useToastr().error('Erro ao atualizar projeto!');
                 })
                 .finally(() => {
-                    this.$inertia.get('/dashboard');
+                    this.$inertia.get('/');
                 });
         },
     },
