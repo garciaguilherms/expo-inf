@@ -2,12 +2,7 @@
     <AuthenticatedLayout>
         <div class="section-container">
             <ul class="section-grid justify-content-center">
-                <li
-                    v-for="section in sectionList"
-                    :key="section.id"
-                    class="section-item"
-                    @click="$inertia.visit('/sections/' + section.id)"
-                >
+                <li v-for="section in sectionList" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
                         width="48"
@@ -144,6 +139,7 @@ export default {
 }
 
 .section-title {
+    cursor: pointer;
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
