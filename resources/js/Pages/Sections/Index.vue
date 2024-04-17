@@ -116,7 +116,6 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 20px;
-    cursor: pointer;
 }
 
 .dropdown-trigger {
@@ -148,6 +147,7 @@ export default {
 .section-subtitle {
     font-size: 16px;
     margin-bottom: 10px;
+    overflow: hidden;
 }
 
 .projects-list {
