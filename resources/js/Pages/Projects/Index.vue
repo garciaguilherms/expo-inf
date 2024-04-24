@@ -1,9 +1,9 @@
 <template>
     <div>
-<!--        <div class="search-box">-->
-<!--            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term"/>-->
-<!--            <button @click="searchProjects" class="btn">Pesquisar</button>-->
-<!--        </div>-->
+        <div class="search-box">
+            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term"/>
+            <button @click="searchProjects" class="btn">Pesquisar</button>
+        </div>
         <div class="project-list">
             <ul class="flex justify-center flex-col md:flex-row flex-wrap p-0 m-8 gap-4 list-none">
                 <li v-for="project in projectList" :key="project.id" class="project-item">
