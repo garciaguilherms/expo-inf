@@ -11,6 +11,23 @@
                 </div>
             </div>
         </div>
+        <a
+            href="https://forms.gle/678df4o4VqkyJ4dp6"
+            target="_blank"
+            style="
+                text-decoration: none;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                word-break: break-word;
+                max-width: 150px;
+                z-index: 9999;
+            "
+        >
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-full">
+                Formulário de Feedback
+            </button>
+        </a>
     </AuthenticatedLayout>
 </template>
 
