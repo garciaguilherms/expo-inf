@@ -9,7 +9,7 @@
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
                         <Dropdown align="right" width="48"
-                                  v-if="$page.props.auth.user && project.created_by === $page.props.auth.user.id">
+                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id || project.authors.some(author => author.id) === $page.props.auth.user.id)">
                             <template #trigger>
                             <span class="dropdown-trigger">
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm"/>

@@ -6,7 +6,11 @@
                     <Dropdown
                         align="right"
                         width="48"
-                        v-if="$page.props.auth.user && section.created_by === $page.props.auth.user.id"
+                        v-if="
+                            $page.props.auth.user &&
+                            (section.created_by === $page.props.auth.user.id ||
+                                section.authors.some(author => author.id) === $page.props.auth.user.id)
+                        "
                     >
                         <template #trigger>
                             <span class="dropdown-trigger">
@@ -53,18 +57,16 @@
                 href="https://forms.gle/Uh2JyVJotumpwKTP6"
                 target="_blank"
                 style="
-                text-decoration: none;
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                word-break: break-word;
-                max-width: 150px;
-                z-index: 9999;
-            "
+                    text-decoration: none;
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    word-break: break-word;
+                    max-width: 150px;
+                    z-index: 9999;
+                "
             >
-                <button class="bg-black text-white font-bold py-4 px-4 rounded-full">
-                    Formulário de Feedback
-                </button>
+                <button class="bg-black text-white font-bold py-4 px-4 rounded-full">Formulário de Feedback</button>
             </a>
         </div>
     </AuthenticatedLayout>
