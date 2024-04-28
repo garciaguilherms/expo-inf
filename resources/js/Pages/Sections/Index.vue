@@ -6,11 +6,7 @@
                     <Dropdown
                         align="right"
                         width="48"
-                        v-if="
-                            $page.props.auth.user &&
-                            (section.created_by === $page.props.auth.user.id ||
-                                section.authors.some(author => author.id) === $page.props.auth.user.id)
-                        "
+                        v-if="$page.props.auth.user && section.created_by === $page.props.auth.user.id"
                     >
                         <template #trigger>
                             <span class="dropdown-trigger">
@@ -34,7 +30,8 @@
                                 {{ section.title }}
                             </h2>
                             <p class="section-subtitle">
-                                {{ section.description }}
+                                {{ section.description.slice(0, 500)
+                                }}{{ section.description.length > 500 ? '...' : '' }}
                             </p>
                         </div>
                         <ul class="projects-list">
