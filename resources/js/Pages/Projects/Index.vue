@@ -29,7 +29,7 @@
                                 </div>
                             </template>
                         </Dropdown>
-                        <div @click="$inertia.visit('/projects/' + project.id)">
+                        <div class="cursor-pointer" @click="$inertia.visit('/projects/' + project.id)">
                             <img :src="project.image" class="project-image" alt="Imagem do projeto"/>
                         </div>
                         <div class="project-info">
@@ -42,27 +42,6 @@
                                     <li v-for="author in project.authors" :key="author.id">{{ author.name }}</li>
                                 </ul>
                             </p>
-                            <div class="project-avg">
-                                <star-rating
-                                    :star-size="20"
-                                    :read-only="false"
-                                    :show-rating="false"
-                                    :rating="project.userRating"
-                                    @update:rating="rating => submitRating(project.id, rating)">
-                                </star-rating>
-                            </div>
-                        </div>
-                        <div class="review-link">
-                            <font-awesome-icon icon="comment" size="sm" style="color: #4a4a4a; margin-right: 5px"/>
-                            <button @click="showCommentBox[project.id] = !showCommentBox[project.id]">Deixe um
-                                comentário
-                            </button>
-                        </div>
-                        <div v-if="showCommentBox[project.id]">
-                            <form @submit.prevent="addComment(project.id)">
-                                <textarea v-model="newComment" placeholder="Digite seu comentário aqui..."></textarea>
-                                <button type="submit">Enviar</button>
-                            </form>
                         </div>
                     </div>
                 </li>
@@ -221,11 +200,6 @@ input {
     flex-direction: column;
 }
 
-.project-avg {
-    display: flex;
-    align-items: center;
-}
-
 .project-list {
     display: flex;
     justify-content: center;
@@ -266,15 +240,6 @@ input {
     overflow: hidden;
     text-overflow: ellipsis;
     max-height: 60px;
-}
-
-.review-link {
-    display: flex;
-    align-items: center;
-    color: #888;
-    text-decoration: none;
-    margin-top: 10px;
-    cursor: pointer;
 }
 
 .review-link i {
