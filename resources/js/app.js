@@ -1,29 +1,29 @@
-import './bootstrap'
+import './bootstrap';
 
-import moment from 'moment'
-import { createApp, h, reactive } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
-import { createStore } from 'vuex'
-import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import projects from './store/modules/projects'
-import users from './store/modules/users'
-import sections from './store/modules/sections'
+import moment from 'moment';
+import { createApp, h, reactive } from 'vue';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { createStore } from 'vuex';
+import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import projects from './store/modules/projects';
+import users from './store/modules/users';
+import sections from './store/modules/sections';
 
-import { faUserSecret, faComment, faStar, faTrash, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
+import { faUserSecret, faComment, faStar, faTrash, faEllipsisV, faReply } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faUserSecret, faComment, faStar, faTrash, faEllipsisV)
+library.add(faUserSecret, faComment, faStar, faTrash, faEllipsisV, faReply);
 
 const store = createStore({
     modules: {
         projects,
         sections,
-        users
-    }
-})
+        users,
+    },
+});
 
-let momentReactive = reactive({ moment })
+let momentReactive = reactive({ moment });
 
 createInertiaApp({
     title: title => `${title}`,
@@ -35,9 +35,9 @@ createInertiaApp({
             .use(store)
             .provide('$moment', momentReactive)
             .component('font-awesome-icon', FontAwesomeIcon)
-            .mount(el)
+            .mount(el);
     },
     progress: {
-        color: '#4B5563'
-    }
-})
+        color: '#4B5563',
+    },
+});
