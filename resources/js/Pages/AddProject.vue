@@ -67,10 +67,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <ProjectCustomization
-                                            :projectData="projectData"
-                                            :availableFonts="availableFonts"
-                                        />
+                                        <ProjectCustomization :projectData="projectData" />
                                     </div>
                                 </div>
                                 <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
@@ -96,22 +93,6 @@ export default {
     data() {
         return {
             projectData: this.isEditing ? this.initialProjectData : { visibility: true },
-            availableFonts: [
-                'Arial',
-                'Verdana',
-                'Helvetica',
-                'Times New Roman',
-                'Courier New',
-                'Georgia',
-                'Palatino',
-                'Garamond',
-                'Bookman',
-                'Avant Garde',
-                'Comic Sans MS',
-                'Trebuchet MS',
-                'Arial Black',
-                'Impact',
-            ],
         };
     },
     props: ['initialProjectData', 'isEditing'],

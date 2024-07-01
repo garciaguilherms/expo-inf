@@ -9,7 +9,7 @@
                 <li v-for="project in projectList" :key="project.id" class="project-item">
                     <div class="project-content">
                         <Dropdown align="right" width="48"
-                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id || project.authors.some(author => author.user_id === $page.props.auth.user.id))">
+                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id || (project.authors && project.authors.some(author => author.user_id === $page.props.auth.user.id)))">
                             <template #trigger>
                                 <span class="dropdown-trigger">
                                     <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm"/>
@@ -22,9 +22,6 @@
                                     </button>
                                     <button type="button" @click="updateProject(project.id)" class="delete-button">
                                         Editar
-                                    </button>
-                                    <button type="button" @click="generateInviteLink(project.id)" class="delete-button">
-                                        Gerar link de convite
                                     </button>
                                 </div>
                             </template>
@@ -79,27 +76,7 @@ export default {
         StarRating,
         moment,
     },
-    mounted() {
-        this.projects.forEach(project => {
-            axios.get(`/projects/${project.id}/rating`)
-                .then(response => {
-                    project.userRating = response.data.rating;
-                })
-        });
-    },
     methods: {
-        generateInviteLink(id) {
-            axios.post(`/projects/${id}/invite`, this.projectData)
-                .then((response) => {
-                    const inviteLink = response.data.link;
-                    console.log(inviteLink);
-                    useToastr().success('Convite copiado com sucesso!');
-                    navigator.clipboard.writeText(inviteLink);
-                })
-                .catch(() => {
-                    useToastr().error('Erro ao gerar link de convite!');
-                })
-        },
         deleteProject(id) {
             axios.delete('/projects/' + id)
                 .then(() => {
@@ -115,31 +92,8 @@ export default {
         updateProject(id) {
             this.$inertia.get('/projects/' + id + '/edit');
         },
-        submitRating(projectId, rating) {
-            axios.post('/projects/' + projectId + '/rating', {
-                stars: rating,
-            })
-        },
-
         formatDate(date) {
             return moment(date).locale('pt-br').fromNow();
-        },
-        addComment(projectId) {
-            if (!this.newComment) {
-                console.error('O campo de texto é obrigatório.');
-                return;
-            }
-
-            axios.post('/projects/' + projectId + '/comments', {
-                text: this.newComment
-            })
-                .then(() => {
-                    this.newComment = '';
-                    this.showCommentBox = false;
-                })
-                .catch((error) => {
-                    console.error(error.response);
-                });
         },
         searchProjects() {
             axios.get('/projects/search/' + this.term)

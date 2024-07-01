@@ -2,75 +2,22 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Author;
-use App\Models\Invite;
-use App\Models\Project;
-use App\Models\ProjectSection;
-use App\Models\Section;
-use App\Models\User;
-use App\Providers\RouteServiceProvider;
+use App\Services\GoogleSheetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Inertia\Response;
 
 class ProjectController extends Controller
 {
-    public function index(): Response
+    protected GoogleSheetService $googleSheetService;
+    protected string $projectSheetName = 'projects';
+    private string $authorSheetName = 'authors';
+
+    public function __construct(GoogleSheetService $googleSheetService)
     {
-        $projects = Project::with('authors')->get();
-
-        return Inertia::render('Projects/Index', [
-            'projects' => $projects
-        ]);
-    }
-
-    public function show(Project $project): Response
-    {
-        $project = $project->load('authors', 'comments', 'comments.user');
-        return Inertia::render('Projects/Project', [
-            'project' => $project
-        ]);
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'image' => 'required',
-            'background_image' => 'nullable',
-            'background_color' => 'nullable',
-            'font_family' => 'nullable',
-            'author_id' => 'required|exists:users,id',
-            'section_id' => 'nullable|exists:sections,id',
-            'visibility' => 'required',
-        ]);
-
-        $project = Project::create(array_merge($request->all(), ['created_by' => auth()->id()]));
-
-        $section = Section::find($request->input('section_id'));
-
-        $author = User::find($request->input('author_id'));
-
-        Author::create([
-            'user_id' => $request->input('author_id'),
-            'project_id' => $project->id,
-            'name' => $author->name,
-        ]);
-
-        if ($section) {
-            ProjectSection::create([
-                'project_id' => $project->id,
-                'section_id' => $section->id
-            ]);
-        }
-
-
-        return redirect(RouteServiceProvider::HOME);
+        $this->googleSheetService = $googleSheetService;
     }
 
     public function create(): Response
@@ -79,106 +26,143 @@ class ProjectController extends Controller
             ->with('isEditing', false);
     }
 
-    public function edit(Project $project): Response
+    public function index(): Response
     {
+        $projects = $this->googleSheetService->readSheet($this->projectSheetName);
+
+        return Inertia::render('Projects/Index', [
+            'projects' => $projects
+        ]);
+    }
+
+    public function show($projectIndex): Response
+    {
+        $projects = $this->googleSheetService->readSheet($this->projectSheetName);
+
+        $projectHeaders = array_shift($projects);
+
+        $projects = $this->googleSheetService->convertToAssociativeArray($projects, $projectHeaders);
+
+        $project = collect($projects)->firstWhere('id', $projectIndex);
+
+        if (!$project) {
+            abort(404, 'Projeto não encontrado');
+        }
+
+        return Inertia::render('Projects/Project', [
+            'project' => $project
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'image' => 'required|url',
+            'author_id' => 'required|string',
+            'section_id' => 'required|integer',
+        ]);
+
+        $projectData = [
+            'id' => uniqid(),
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'image' => $validatedData['image'],
+            'author_id' => $validatedData['author_id'],
+            'section_id' => $validatedData['section_id'],
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
+            'background_image' => $request->input('background_image'),
+        ];
+
+        $this->googleSheetService->writeSheet($this->projectSheetName, $projectData);
+
+        $authorId = $validatedData['author_id'];
+
+        $authorRow = $this->googleSheetService->findRowById('users', $authorId);
+
+        $authorData = $this->googleSheetService->readSheet('users')[$authorRow - 1];
+
+        $authorName = $authorData[1];
+
+        $authorData = [
+                'id' => uniqid(),
+                'project_id' => $projectData['id'],
+                'user_id' => $authorId,
+                'name' => $authorName,
+                'created_at' => now()->toDateTimeString(),
+                'updated_at' => now()->toDateTimeString()
+            ];
+            $this->googleSheetService->writeAuthor($authorData);
+
+        $sectionId = $validatedData['section_id'];
+        if ($sectionId) {
+            $sectionRow = $this->googleSheetService->findRowById('sections', $sectionId);
+            if ($sectionRow) {
+                $sectionData = [
+                    'title' => $projectData['title'],
+                    'section_id' => $sectionId,
+                    'created_at' => now()->toDateTimeString(),
+                    'updated_at' => now()->toDateTimeString()
+                ];
+                $this->googleSheetService->writeSection($sectionData);
+            }
+        }
+
+        return redirect()->route('projects.index');
+    }
+
+    public function edit($rowIndex): Response
+    {
+        $rowIndex = (int) $rowIndex;
+
+        $projects = $this->googleSheetService->readSheet($this->projectSheetName);
+
+        $projectHeaders = array_shift($projects);
+
+        $projects = $this->googleSheetService->convertToAssociativeArray($projects, $projectHeaders);
+
+        if ($rowIndex < 0 || $rowIndex >= count($projects)) {
+            abort(404, 'Project not found');
+        }
+
+        $project = $projects[$rowIndex];
+
         return Inertia::render('AddProject', [
             'initialProjectData' => $project,
         ])
             ->with('isEditing', true);
     }
 
-    public function update(Request $request, Project $project): void
+    public function update(Request $request, $rowIndex): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'image' => 'required',
-            'background_image' => 'nullable',
-            'background_color' => 'nullable',
-            'font_family' => 'nullable',
-            'author_id' => 'required|exists:users,id',
-            'section_id' => 'nullable|exists:sections,id',
-            'visibility' => 'required',
-        ]);
+        $projectData = [
+            'id' => $request->input('id'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'image' => $request->input('image'),
+            'section_id' => $request->input('section_id'),
+            'author_id' => $request->input('author_id'),
+            'created_at' => $request->input('created_at'),
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => $request->input('created_by'),
+            'background_image' => $request->input('background_image'),
+        ];
 
-        $project->update($request->all());
+        $projectData = array_filter($projectData, function ($value) {
+            return $value !== null;
+        });
+
+        $this->googleSheetService->updateProjectSheet($this->projectSheetName, $rowIndex, $projectData);
+
+        return redirect()->route('projects.index');
     }
 
-    public function destroy(Project $project): void
+    public function destroy($rowIndex): RedirectResponse
     {
-        $authors = Author::where('project_id', $project->id)->get();
-        foreach ($authors as $author) {
-            $author->delete();
-        }
+        $this->googleSheetService->deleteProjectSheetRow($this->projectSheetName, $rowIndex);
 
-        $project->delete();
-    }
-
-    public function search($term): JsonResponse
-    {
-        if ($term) {
-            $projects = Project::with('authors')
-                ->where('title', 'like', '%' . $term . '%')
-                ->get();
-        } else {
-            $projects = Project::with('authors')->get();
-        }
-
-        return response()->json($projects);
-    }
-
-    public function ranking(): JsonResponse
-    {
-        $projects = Project::query()
-            ->with('authors')
-            ->orderByDesc('average_stars')
-            ->get();
-
-        return response()->json($projects);
-    }
-
-    public function createInvite(Project $project): JsonResponse
-    {
-        $token = Str::random();
-
-        Invite::create([
-            'project_id' => $project->id,
-            'user_id' => auth()->user()->id,
-            'token' => $token
-        ]);
-
-        return response()->json([
-            'link' => url('/invite/' . $token),
-        ]);
-    }
-
-    public function acceptInvite($token): RedirectResponse
-    {
-        if (auth()->guest()) {
-            session()->put('invite_token', $token);
-            return redirect()->route('login');
-        }
-
-        $invite = Invite::where('token', $token)->firstOrFail();
-        $user = auth()->user();
-
-        $existingAuthor = Author::where('project_id', $invite->project_id)
-            ->where('user_id', auth()->id())
-            ->first();
-
-        if ($existingAuthor) {
-            Inertia::render('Projects/Project', [
-                'project' => $invite->project
-            ]);
-        }
-
-        $author = new Author();
-        $author->project_id = $invite->project_id;
-        $author->user_id = $user->id;
-        $author->name = $user->name;
-        $author->save();
-
-        return redirect()->route('projects.show', $author->project);
+        return redirect()->route('projects.index');
     }
 }
-

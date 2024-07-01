@@ -7,7 +7,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\ProviderController;
-use App\Models\Project;
+use App\Services\GoogleSheetService;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,12 +30,11 @@ Route::get('/homepage', function () {
     ]);
 });
 
-Route::get('/', function () {
-    $projects = Project::with('authors')->get();
-    return Inertia::render('Dashboard')
-        ->with([
-            'projects' => $projects,
-        ]);
+Route::get('/', function (GoogleSheetService $googleSheetService) {
+    $projects = $googleSheetService->getProjects();
+    return Inertia::render('Dashboard', [
+        'projects' => $projects,
+    ]);
 })->name('dashboard');
 
 Route::get('/users', [UserController::class, 'index'])
@@ -43,22 +42,30 @@ Route::get('/users', [UserController::class, 'index'])
 
 Route::get('/projects/search/{term}', [ProjectController::class, 'search'])
     ->name('search');
+
 Route::get('/projects', [ProjectController::class, 'index'])
     ->name('projects.index');
+
 Route::get('/projects/create', [ProjectController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('projects.create');
+
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+
 Route::get('/projects/ranking', [ProjectController::class, 'ranking'])->name('projects.ranking');
+
 Route::post('/projects', [ProjectController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('projects.store');
+
 Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])
     ->middleware(['auth', 'verified'])
     ->name('projects.edit');
+
 Route::put('/projects/{project}', [ProjectController::class, 'update'])
     ->middleware(['auth', 'verified'])
     ->name('projects.update');
+
 Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('projects.destroy');
