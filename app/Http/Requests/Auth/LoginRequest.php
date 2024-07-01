@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Auth\AuthUser;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Revolution\Google\Sheets\Facades\Sheets;
 
 class LoginRequest extends FormRequest
 {
@@ -35,13 +38,15 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = $this->only('email', 'password');
+
+        if (!Auth::guard('web')->attempt($credentials)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -52,10 +57,11 @@ class LoginRequest extends FormRequest
         RateLimiter::clear($this->throttleKey());
     }
 
+
     /**
      * Ensure the login request is not rate limited.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -81,5 +87,24 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+    }
+
+    public function getUserByEmail($email): ?array
+    {
+        $sheet = Sheets::spreadsheet(config('google.spreadsheet_id'))->sheet('users');
+
+        $rows = $sheet->all();
+
+        $headers = array_shift($rows);
+
+        foreach ($rows as $row) {
+            if (count($row) === count($headers)) {
+                $user = array_combine($headers, $row);
+                if (isset($user['email']) && $user['email'] === $email) {
+                    return $user;
+                }
+            }
+        }
+        return null;
     }
 }
