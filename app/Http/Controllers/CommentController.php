@@ -2,27 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\Project;
-use App\Models\Comment;
+use App\Services\GoogleSheetService;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, Project $project): \Illuminate\Http\RedirectResponse
+    protected GoogleSheetService $googleSheetService;
+    protected string $commentSheetName = 'comments';
+
+    public function __construct(GoogleSheetService $googleSheetService)
+    {
+        $this->googleSheetService = $googleSheetService;
+    }
+
+    public function store(Request $request, $projectId): RedirectResponse
     {
         $request->validate([
             'text' => 'required',
         ]);
 
-        $comment = new Comment([
-            'text' => $request->text,
-            'user_id' => auth()->id(),
-            'project_id' => $project->id,
-        ]);
+        $commentData = [
+            'id' => uniqid(),
+            'project_id' => $projectId,
+            'user_id' => Auth::user()->id,
+            'user_name' => Auth::user()->name,
+            'text' => $request->input('text'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
 
-        $project->comments()->save($comment);
+        $this->googleSheetService->writeSheet($this->commentSheetName, $commentData);
 
         return back();
     }
-
 }

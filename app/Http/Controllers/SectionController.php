@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Section;
-use App\Models\Project;
+use App\Services\GoogleSheetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,74 +12,160 @@ use Inertia\Response;
 
 class SectionController extends Controller
 {
-    public function index(): Response
-    {
-        $sections = Section::with('projects')
-            ->with('projects.authors')
-            ->get();
+    protected GoogleSheetService $googleSheetService;
+    protected string $sectionSheetName = 'sections';
 
-        return Inertia::render('Sections/Index', ['sections' => $sections]);
+    public function __construct(GoogleSheetService $googleSheetService)
+    {
+        $this->googleSheetService = $googleSheetService;
     }
 
-    public function show(Section $section): Response
+    public function index(): Response
     {
-        $section->load('projects');
+        $sections = $this->googleSheetService->readSheet($this->sectionSheetName);
+        $sectionsHeader = array_shift($sections);
+        $sections = $this->googleSheetService->convertToAssociativeArray($sections, $sectionsHeader);
+
+
+        foreach ($sections as &$section) {
+            $sectionId = $section['id'];
+            $projects = $this->googleSheetService->getProjectsBySectionId($sectionId);
+            $section['projects'] = $projects;
+        }
+
+        return Inertia::render('Sections/Index', [
+            'sections' => $sections
+        ]);
+    }
+
+    public function show($sectionIndex): Response
+    {
+        $sections = $this->googleSheetService->readSheet($this->sectionSheetName);
+
+        $sectionHeaders = array_shift($sections);
+        $sections = $this->googleSheetService->convertToAssociativeArray($sections, $sectionHeaders);
+
+        $section = collect($sections)->firstWhere('id', $sectionIndex);
+
+        if (!$section) {
+            abort(404, 'Seção não encontrada');
+        }
+
+        // Obter todos os projetos
+        $projects = $this->googleSheetService->getProjects();
+        // Filtrar projetos para encontrar os que pertencem a esta seção
+        $sectionProjects = array_filter($projects, function ($project) use ($sectionIndex) {
+            return $project['section_id'] === $sectionIndex;
+        });
+
+        $section['projects'] = $sectionProjects;
 
         return Inertia::render('Sections/Show', [
-            'section' => $section,
-            'projects' => $section->projects()->with('authors')->get(),
+            'section' => $section
         ]);
     }
 
     public function allSections(): JsonResponse
     {
-        $sections = Section::all();
+        $sections = $this->googleSheetService->readSheet($this->sectionSheetName);
+        $sectionsHeaders = array_shift($sections);
+
+        $sections = $this->googleSheetService->convertToAssociativeArray($sections, $sectionsHeaders);
 
         return response()->json($sections);
     }
 
-    public function create(): \Inertia\Response
+    public function create(): Response
     {
         return Inertia::render('Sections/Create');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required',
             'description' => 'required',
             'tags' => 'nullable',
         ]);
 
-        $request->merge(['creator_id' => auth()->id()]);
+        $sectionData = [
+            'id' => uniqid(),
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'tags' => $validatedData['tags'],
+            'created_at' => now(),
+            'updated_at' => now(),
+            'created_by' => auth()->user()->id,
+        ];
 
-        Section::create(array_merge($request->all(), ['created_by' => auth()->id()]));
+        $this->googleSheetService->writeSheet($this->sectionSheetName, $sectionData);
 
         return redirect()->route('sections.index');
     }
 
-    public function edit(Section $section): Response
+    public function edit($rowIndex): Response
     {
+        $sections = $this->googleSheetService->readSheet($this->sectionSheetName);
+
+        if (empty($sections) || count($sections) < 2) {
+            abort(404, 'Nenhuma seção encontrada');
+        }
+
+        $sectionHeaders = array_shift($sections);
+
+        $sections = $this->googleSheetService->convertToAssociativeArray($sections, $sectionHeaders);
+
+        $targetSection = null;
+        foreach ($sections as $section) {
+            if ($section['id'] === $rowIndex) {
+                $targetSection = $section;
+                break;
+            }
+        }
+
+        if (!$targetSection) {
+            abort(404, 'Seção não encontrada');
+        }
+
         return Inertia::render('Sections/Create', [
-            'initialSectionData' => $section,
-        ])
-            ->with('isEditing', true);
+            'initialSectionData' => $targetSection
+        ])->with('isEditing', true);
     }
 
-    public function update(Request $request, Section $section): void
+    public function update(Request $request, $sectionId): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'tags' => 'nullable',
-        ]);
+        $sectionData = [
+            'id' => $request->input('id'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'tags' => $request->input('tags'),
+            'created_at' => $request->input('created_at'),
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => $request->input('created_by'),
+        ];
 
-        $section->update($request->all());
+        $sectionData = array_filter($sectionData, function ($value) {
+            return $value !== null;
+        });
+
+        $rowIndex = $this->googleSheetService->findRowIndexById($sectionId, $this->sectionSheetName);
+
+        if ($rowIndex === null) {
+            return redirect()->back()->with('error', 'Projeto não encontrado na planilha.');
+        }
+
+        $this->googleSheetService->updateSheet($this->sectionSheetName, $rowIndex, $sectionData);
+
+        return redirect()->route('sections.index');
     }
 
-    public function destroy(Section $section): RedirectResponse
+    public function destroy($rowIndex): RedirectResponse
     {
-        $section->delete();
+        $row = $this->googleSheetService->findRowIndexById($rowIndex, $this->sectionSheetName);
+
+        if ($row) {
+            $this->googleSheetService->deleteSheetRow($this->sectionSheetName, $row);
+        }
         return redirect()->route('sections.index');
     }
 }

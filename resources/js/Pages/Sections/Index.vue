@@ -30,8 +30,8 @@
                                 {{ section.title }}
                             </h2>
                             <p class="section-subtitle">
-                                {{ section.description.slice(0, 500)
-                                }}{{ section.description.length > 500 ? '...' : '' }}
+                                {{ section.description?.slice(0, 200)
+                                }}{{ section.description?.length > 200 ? '...' : '' }}
                             </p>
                         </div>
                         <ul class="projects-list">
@@ -40,8 +40,8 @@
                                     <div class="project-title">
                                         {{ project.title }}
                                     </div>
-                                    <div class="project-description">
-                                        Autores: {{ project.authors.map(author => author.name).join(', ') }}
+                                    <div class="project-description" v-if="project.authors">
+                                        Autores: {{ project.authors?.map(author => author.name).join(', ') }}
                                     </div>
                                 </div>
                                 <img :src="project.image" class="project-image" alt="Capa do projeto" />
@@ -50,21 +50,6 @@
                     </div>
                 </li>
             </ul>
-            <!--            <a-->
-            <!--                href="https://forms.gle/Uh2JyVJotumpwKTP6"-->
-            <!--                target="_blank"-->
-            <!--                style="-->
-            <!--                    text-decoration: none;-->
-            <!--                    position: fixed;-->
-            <!--                    bottom: 20px;-->
-            <!--                    right: 20px;-->
-            <!--                    word-break: break-word;-->
-            <!--                    max-width: 150px;-->
-            <!--                    z-index: 9999;-->
-            <!--                "-->
-            <!--            >-->
-            <!--                <button class="bg-black text-white font-bold py-4 px-4 rounded-full">Formulário de Feedback</button>-->
-            <!--            </a>-->
         </div>
     </AuthenticatedLayout>
 </template>
@@ -96,7 +81,7 @@ export default {
                     console.error('Error deleting project:', error);
                 })
                 .finally(() => {
-                    useToastr().success('Secão excluída com sucesso!');
+                    useToastr().success('Seção excluída com sucesso!');
                     this.$inertia.get('/sections');
                 });
         },

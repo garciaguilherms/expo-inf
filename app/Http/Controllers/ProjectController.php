@@ -13,17 +13,10 @@ class ProjectController extends Controller
 {
     protected GoogleSheetService $googleSheetService;
     protected string $projectSheetName = 'projects';
-    private string $authorSheetName = 'authors';
 
     public function __construct(GoogleSheetService $googleSheetService)
     {
         $this->googleSheetService = $googleSheetService;
-    }
-
-    public function create(): Response
-    {
-        return Inertia::render('AddProject')
-            ->with('isEditing', false);
     }
 
     public function index(): Response
@@ -49,9 +42,19 @@ class ProjectController extends Controller
             abort(404, 'Projeto não encontrado');
         }
 
+        $comments = $this->googleSheetService->getCommentsByProjectId($projectIndex);
+
+        $project['comments'] = $comments;
+
         return Inertia::render('Projects/Project', [
             'project' => $project
         ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('AddProject')
+            ->with('isEditing', false);
     }
 
     public function store(Request $request): RedirectResponse
@@ -61,7 +64,7 @@ class ProjectController extends Controller
             'description' => 'required|string',
             'image' => 'required|url',
             'author_id' => 'required|string',
-            'section_id' => 'required|integer',
+            'section_id' => 'required|string',
         ]);
 
         $projectData = [
@@ -94,9 +97,11 @@ class ProjectController extends Controller
                 'created_at' => now()->toDateTimeString(),
                 'updated_at' => now()->toDateTimeString()
             ];
-            $this->googleSheetService->writeAuthor($authorData);
+
+        $this->googleSheetService->writeAuthor($authorData);
 
         $sectionId = $validatedData['section_id'];
+
         if ($sectionId) {
             $sectionRow = $this->googleSheetService->findRowById('sections', $sectionId);
             if ($sectionRow) {
@@ -115,27 +120,35 @@ class ProjectController extends Controller
 
     public function edit($rowIndex): Response
     {
-        $rowIndex = (int) $rowIndex;
-
         $projects = $this->googleSheetService->readSheet($this->projectSheetName);
+
+        if (empty($projects) || count($projects) < 2) {
+            abort(404, 'Nenhum projeto encontrado');
+        }
 
         $projectHeaders = array_shift($projects);
 
         $projects = $this->googleSheetService->convertToAssociativeArray($projects, $projectHeaders);
 
-        if ($rowIndex < 0 || $rowIndex >= count($projects)) {
-            abort(404, 'Project not found');
+        $targetProject = null;
+        foreach ($projects as $project) {
+            if ($project['id'] === $rowIndex) {
+                $targetProject = $project;
+                break;
+            }
         }
 
-        $project = $projects[$rowIndex];
+        if (!$targetProject) {
+            abort(404, 'Projeto não encontrado');
+        }
 
         return Inertia::render('AddProject', [
-            'initialProjectData' => $project,
+            'initialProjectData' => $targetProject,
         ])
             ->with('isEditing', true);
     }
 
-    public function update(Request $request, $rowIndex): RedirectResponse
+    public function update(Request $request, $projectId): RedirectResponse
     {
         $projectData = [
             'id' => $request->input('id'),
@@ -154,15 +167,24 @@ class ProjectController extends Controller
             return $value !== null;
         });
 
-        $this->googleSheetService->updateProjectSheet($this->projectSheetName, $rowIndex, $projectData);
+        $rowIndex = $this->googleSheetService->findRowIndexById($projectId, $this->projectSheetName);
+
+        if ($rowIndex === null) {
+            return redirect()->back()->with('error', 'Projeto não encontrado na planilha.');
+        }
+
+        $this->googleSheetService->updateSheet($this->projectSheetName, $rowIndex, $projectData);
 
         return redirect()->route('projects.index');
     }
 
     public function destroy($rowIndex): RedirectResponse
     {
-        $this->googleSheetService->deleteProjectSheetRow($this->projectSheetName, $rowIndex);
+        $row = $this->googleSheetService->findRowIndexById($rowIndex, $this->projectSheetName);
 
+        if ($row) {
+            $this->googleSheetService->deleteSheetRow($this->projectSheetName, $row);
+        }
         return redirect()->route('projects.index');
     }
 }
