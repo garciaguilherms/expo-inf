@@ -40,11 +40,11 @@ class GoogleSheetService
             ->clear();
     }
 
-    public function updateProjectSheet($sheetName, $rowIndex, $values): void
+    public function updateSheet($sheetName, $rowIndex, $values): void
     {
         $data = [array_values($values)];
 
-        $range = "{$sheetName}!A2:J2";
+        $range = "{$sheetName}!A{$rowIndex}:J{$rowIndex}";
 
         try {
             Sheets::spreadsheet($this->spreadsheetId)
@@ -56,10 +56,9 @@ class GoogleSheetService
         }
     }
 
-
-    public function deleteProjectSheetRow($sheetName, $rowIndex): ?ClearValuesResponse
+    public function deleteSheetRow($sheetName, $rowIndex): ?ClearValuesResponse
     {
-        $range = "{$sheetName}!A2:J2";
+        $range = "{$sheetName}!A{$rowIndex}:J{$rowIndex}";
         return Sheets::spreadsheet($this->spreadsheetId)
             ->range($range)
             ->clear();
@@ -79,10 +78,41 @@ class GoogleSheetService
     public function convertToAssociativeArray($data, $headers): array
     {
         $associativeArray = [];
+
         foreach ($data as $row) {
-            $associativeArray[] = array_combine($headers, $row);
+            if (count($headers) == count($row)) {
+                $associativeArray[] = array_combine($headers, $row);
+            } else {
+                error_log("Mismatched lengths: Headers: " . count($headers) . ", Row: " . count($row));
+            }
         }
+
         return $associativeArray;
+    }
+
+    public function findRowIndexById($id, $sheetName): int|string|null
+    {
+        $sheetData = $this->fetchSheetData($sheetName);
+
+        foreach ($sheetData as $index => $row) {
+            if (isset($row[0]) && $row[0] == $id) {
+                return $index + 1;
+            }
+        }
+
+        return null;
+    }
+
+    public function fetchSheetData($sheetName): array
+    {
+        try {
+            return Sheets::spreadsheet($this->spreadsheetId)
+                ->sheet($sheetName)
+                ->all();
+
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     public function writeAuthor($values): AppendValuesResponse
@@ -122,5 +152,30 @@ class GoogleSheetService
 
         return $projects;
     }
+
+    public function getCommentsByProjectId($projectId): array
+    {
+        $comments = $this->readSheet('comments');
+
+        $commentHeaders = array_shift($comments);
+
+        $comments = $this->convertToAssociativeArray($comments, $commentHeaders);
+
+        return array_filter($comments, function ($comment) use ($projectId) {
+            return $comment['project_id'] == $projectId;
+        });
+    }
+
+    public function getProjectsBySectionId($sectionId): array
+    {
+        $projects = $this->readSheet($this->projectSheetName);
+        $projectHeaders = array_shift($projects);
+        $projects = $this->convertToAssociativeArray($projects, $projectHeaders);
+
+        return array_filter($projects, function ($project) use ($sectionId) {
+            return $project['section_id'] === $sectionId;
+        });
+    }
+
 
 }

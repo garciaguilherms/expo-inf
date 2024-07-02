@@ -39,22 +39,8 @@
                         <div class="project-comment-box">
                             <p class="comment-section-title">Seção de comentários</p>
                             <div class="comment-box" v-for="comment in project.comments">
-                                <p class="comment-user">{{ comment.user.name }}</p>
+                                <p class="comment-user">{{ comment.user_name }}</p>
                                 <p class="comment-text">{{ comment.text }}</p>
-                                <div class="comment-actions">
-                                    <button @click="showReplyForm(comment.id)" class="reply-btn">
-                                        <font-awesome-icon icon="reply" size="sm" />
-                                    </button>
-                                    <p class="comment-date">Criado {{ formatDate(comment.created_at) }}</p>
-                                </div>
-                                <div v-if="replyingTo === comment.id" class="reply-form">
-                                    <textarea
-                                        class="reply-input"
-                                        placeholder="Escreva sua resposta para o comentário aqui..."
-                                        v-model="newReply"
-                                    ></textarea>
-                                    <button @click="postReply(comment.id)" class="reply-submit-btn">Enviar</button>
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -70,36 +70,49 @@ Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('projects.destroy');
 
+
+//Sections
 Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
+
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
+
 Route::get('/sections/create', [SectionController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('sections.create');
+
 Route::post('/sections', [SectionController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('sections.store');
+
 Route::get('/sections/{section}', [SectionController::class, 'show'])
     ->name('sections.show');
+
 Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])
     ->middleware(['auth', 'verified'])
     ->name('sections.edit');
+
 Route::put('/sections/{section}', [SectionController::class, 'update'])
     ->middleware(['auth', 'verified'])
     ->name('sections.update');
+
 Route::delete('/sections/{section}', [SectionController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('sections.destroy');
 
 Route::post('/projects/{project}/comments', [CommentController::class, 'store'])
     ->name('comments.store');
+
 Route::post('/projects/{project}/invite', [ProjectController::class, 'createInvite'])
     ->middleware(['auth', 'verified'])
     ->name('projects.createInvite');
+
 Route::get('/invite/{token}', [ProjectController::class, 'acceptInvite'])
     ->middleware(['auth', 'verified'])
     ->name('projects.acceptInvite');
+
 Route::post('/projects/{project}/rating', [RatingController::class, 'store'])
     ->name('rating.store');
+
 Route::get('/projects/{project}/rating', [RatingController::class, 'userRating'])
     ->name('rating.user-rating');
 
