@@ -33,6 +33,27 @@ class GoogleSheetService
             ->append([$values]);
     }
 
+    public function writeProjectSheet($sheetName, $values): AppendValuesResponse
+    {
+        $formattedValues = [
+            [
+                $values['id'],
+                $values['title'],
+                $values['description'],
+                $values['image'],
+                $values['section_id'],
+                implode(', ', $values['author_id']),
+                $values['created_at'],
+                $values['updated_at'],
+                $values['background_image'],
+            ]
+        ];
+
+        return Sheets::spreadsheet($this->spreadsheetId)
+            ->sheet($sheetName)
+            ->append($formattedValues);
+    }
+
     public function deleteSheet($sheetName): void
     {
         Sheets::spreadsheet($this->spreadsheetId)
