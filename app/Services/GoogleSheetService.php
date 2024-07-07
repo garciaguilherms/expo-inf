@@ -2,35 +2,57 @@
 
 namespace App\Services;
 
+use Google_Client;
+use Google_Service_Sheets;
 use Google\Service\Sheets\AppendValuesResponse;
-use Google\Service\Sheets\BatchUpdateValuesResponse;
 use Google\Service\Sheets\ClearValuesResponse;
-use Revolution\Google\Sheets\Facades\Sheets;
 
 class GoogleSheetService
 {
     protected mixed $spreadsheetId;
     protected string $projectSheetName = 'projects';
-    protected string $userSheetName = 'users';
     protected string $authorSheetName = 'authors';
+    protected Google_Service_Sheets $service;
 
     public function __construct()
     {
         $this->spreadsheetId = '1H8zzCuEFcMa4o-1QbTCXhyNWXVgHeEr_fi5xVNmNSGw';
+        $this->initializeGoogleClient();
+    }
+
+    protected function initializeGoogleClient(): void
+    {
+        $config = config('google');
+
+        $client = new Google_Client();
+        $client->setApplicationName($config['application_name']);
+        $client->setClientId($config['client_id']);
+        $client->setClientSecret($config['client_secret']);
+        $client->setRedirectUri($config['redirect_uri']);
+        $client->setAccessType($config['access_type']);
+        $client->setApprovalPrompt($config['approval_prompt']);
+        $client->setScopes($config['scopes']);
+
+        if ($config['service']['enable']) {
+            $client->setAuthConfig($config['service']['file']);
+        } else {
+            $client->setDeveloperKey($config['developer_key']);
+        }
+
+        $this->service = new Google_Service_Sheets($client);
     }
 
     public function readSheet($sheetName): array
     {
-        return Sheets::spreadsheet($this->spreadsheetId)
-            ->sheet($sheetName)
-            ->all();
+        $response = $this->service->spreadsheets_values->get($this->spreadsheetId, $sheetName);
+        return $response->getValues();
     }
 
     public function writeSheet($sheetName, $values): AppendValuesResponse
     {
-        return Sheets::spreadsheet($this->spreadsheetId)
-            ->sheet($sheetName)
-            ->append([$values]);
+        $body = new Google_Service_Sheets_ValueRange(['values' => [$values]]);
+        $params = ['valueInputOption' => 'RAW'];
+        return $this->service->spreadsheets_values->append($this->spreadsheetId, $sheetName, $body, $params);
     }
 
     public function writeProjectSheet($sheetName, $values): AppendValuesResponse
@@ -49,29 +71,22 @@ class GoogleSheetService
             ]
         ];
 
-        return Sheets::spreadsheet($this->spreadsheetId)
-            ->sheet($sheetName)
-            ->append($formattedValues);
+        return $this->writeSheet($sheetName, $formattedValues);
     }
 
     public function deleteSheet($sheetName): void
     {
-        Sheets::spreadsheet($this->spreadsheetId)
-            ->sheet($sheetName)
-            ->clear();
+        $this->service->spreadsheets_values->clear($this->spreadsheetId, $sheetName, new Google_Service_Sheets_ClearValuesRequest());
     }
 
     public function updateSheet($sheetName, $rowIndex, $values): void
     {
-        $data = [array_values($values)];
-
+        $body = new Google_Service_Sheets_ValueRange(['values' => [array_values($values)]]);
         $range = "{$sheetName}!A{$rowIndex}:J{$rowIndex}";
+        $params = ['valueInputOption' => 'RAW'];
 
         try {
-            Sheets::spreadsheet($this->spreadsheetId)
-                ->sheet($sheetName)
-                ->range($range)
-                ->update($data);
+            $this->service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -80,9 +95,7 @@ class GoogleSheetService
     public function deleteSheetRow($sheetName, $rowIndex): ?ClearValuesResponse
     {
         $range = "{$sheetName}!A{$rowIndex}:J{$rowIndex}";
-        return Sheets::spreadsheet($this->spreadsheetId)
-            ->range($range)
-            ->clear();
+        return $this->service->spreadsheets_values->clear($this->spreadsheetId, $range, new Google_Service_Sheets_ClearValuesRequest());
     }
 
     public function findRowById($sheetName, $id, $idColumn = 'A'): int|string|null
@@ -127,10 +140,7 @@ class GoogleSheetService
     public function fetchSheetData($sheetName): array
     {
         try {
-            return Sheets::spreadsheet($this->spreadsheetId)
-                ->sheet($sheetName)
-                ->all();
-
+            return $this->readSheet($sheetName);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -139,9 +149,7 @@ class GoogleSheetService
     public function getRelationsById($id, $relationSheet, $column): array
     {
         $relations = $this->readSheet($relationSheet);
-
         $relationHeaders = array_shift($relations);
-
         $relations = $this->convertToAssociativeArray($relations, $relationHeaders);
 
         return array_filter($relations, function ($relation) use ($id, $column) {
@@ -164,7 +172,6 @@ class GoogleSheetService
 
         return $this->convertToAssociativeArray($filteredItems, $headers);
     }
-
 
     public function writeAuthor($values): AppendValuesResponse
     {
