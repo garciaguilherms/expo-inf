@@ -55,7 +55,7 @@ return [
          * Path to service account json file. You can also pass the credentials as an array
          * instead of a file path.
          */
-        'file' => storage_path('expoinf-44d9bcbe0d0f.json'),
+        'file' => env('GOOGLE_SERVICE_ACCOUNT_FILE', storage_path('expoinf-12c91600690f.json')),
     ],
 
     /*
