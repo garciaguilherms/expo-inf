@@ -2,45 +2,48 @@
     <Head title="Dashboard" />
     <AuthenticatedLayout>
         <div
-            class="py-12"
+            class="py-12 background-container"
             :style="{
-                backgroundColor: project.background_image ? '' : project.background_color,
                 backgroundImage: project.background_image ? `url(${project.background_image})` : '',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
             }"
         >
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="project-container">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="p-6 text-gray-900 flex justify-end flex-col">
-                            <div class="image-ranking-box">
+                    <div class="p-6 text-gray-900 flex">
+                        <div class="w-full lg:w-1/3 pr-4">
+                            <div class="image-box">
                                 <img :src="project.image" class="project-image" alt="Imagem do projeto" />
                             </div>
                             <h2 class="project-title">{{ project.title }}</h2>
+                            <p class="project-author">Autores do projeto:</p>
+                            <div v-for="author in project.authors" :key="author.id">
+                                <p class="project-author">{{ author.name }}</p>
+                            </div>
+                            <p class="project-date">Criado {{ formatDate(project.created_at) }}</p>
+                        </div>
+                        <div class="w-full lg:w-2/3 pl-4">
                             <div
                                 class="my-8 prose max-w-none"
                                 style="word-wrap: break-word"
                                 v-html="project.description"
                             ></div>
-                            <p class="project-artist">Autores:</p>
-                            <div v-for="author in project.authors">
-                                <p class="project-artist">{{ author.name }}</p>
-                            </div>
-                        </div>
-                        <form class="comment-form" @submit.prevent="postComment(project.id)">
-                            <textarea
-                                class="comment-input"
-                                placeholder="Deixe seu comentário aqui..."
-                                v-model="newComment"
-                            ></textarea>
-                            <button type="submit" class="comment-submit-btn">Postar</button>
-                        </form>
-                        <div class="project-comment-box">
-                            <p class="comment-section-title">Seção de comentários</p>
-                            <div class="comment-box" v-for="comment in project.comments">
-                                <p class="comment-user">{{ comment.user_name }}</p>
-                                <p class="comment-text">{{ comment.text }}</p>
+                            <form class="comment-form" @submit.prevent="postComment(project.id)">
+                                <textarea
+                                    class="comment-input"
+                                    placeholder="Deixe seu comentário aqui..."
+                                    v-model="newComment"
+                                ></textarea>
+                                <button type="submit" class="comment-submit-btn">Enviar</button>
+                            </form>
+                            <div class="project-comment-box">
+                                <p class="comment-section-title">Seção de comentários</p>
+                                <div class="comment-box" v-for="comment in project.comments" :key="comment.id">
+                                    <p class="comment-user">{{ comment.user_name }}</p>
+                                    <p class="comment-text">{{ comment.text }}</p>
+                                    <p class="comment-date">{{ formatDate(comment.created_at) }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,24 +101,57 @@ export default {
     },
 };
 </script>
+
 <style scoped>
+.background-container {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.background-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.project-container {
+    max-width: 100rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
 .project-image {
     object-fit: cover;
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 .project-title {
-    display: flex;
-    justify-content: center;
-    margin: 10px;
+    text-align: center;
+    margin: 10px 0;
     font-size: 25px;
     font-weight: bold;
 }
 
-.project-artist {
+.project-author {
+    font-size: 14px;
+    color: #888;
+}
+
+.project-date {
     font-size: 12px;
     color: #888;
+    margin-top: 10px;
 }
 
 .comment-section-title {
@@ -123,7 +159,6 @@ export default {
     font-weight: bold;
     border-bottom: 1px solid #000000;
     margin-bottom: 1.5rem;
-    margin-left: 0.5rem;
 }
 
 .project-comment-box {
@@ -143,19 +178,21 @@ export default {
 .comment-user {
     color: #333333;
     font-weight: bold;
-    margin: 0.5rem;
 }
 
 .comment-text {
     color: #555555;
 }
 
-.image-ranking-box {
+.image-box {
     display: flex;
     justify-content: center;
     max-width: 100%;
     height: 500px;
     position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 1.5rem;
 }
 
 .comment-form {
@@ -209,50 +246,14 @@ export default {
     margin-left: 8px;
 }
 
-.comment-actions {
-    display: flex;
-    align-items: center;
-}
-
-.reply-btn {
-    color: #505050;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.reply-form {
-    display: flex;
-    flex-direction: column;
-    margin-top: 0.5rem;
-}
-
-.reply-input {
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.reply-submit-btn {
-    background-color: #000000;
-    border: none;
-    color: white;
-    padding: 5px 5px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.reply-submit-btn:hover {
-    background-color: #505050;
-}
-
 .prose {
     word-wrap: break-word;
+}
+
+@media (min-width: 1024px) {
+    .project-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
 }
 </style>

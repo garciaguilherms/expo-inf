@@ -115,6 +115,36 @@ class GoogleSheetService
         }
     }
 
+    public function getRelationsById($id, $relationSheet, $column): array
+    {
+        $relations = $this->readSheet($relationSheet);
+
+        $relationHeaders = array_shift($relations);
+
+        $relations = $this->convertToAssociativeArray($relations, $relationHeaders);
+
+        return array_filter($relations, function ($relation) use ($id, $column) {
+            return $relation[$column] == $id;
+        });
+    }
+
+    public function searchSheets($term, $sheetName): array
+    {
+        $sheets = $this->readSheet($sheetName);
+        $headers = array_shift($sheets);
+
+        if (!empty($term)) {
+            $filteredItems = array_filter($sheets, function($sheet) use ($term) {
+                return isset($sheet[1]) && stripos($sheet[1], $term) !== false;
+            });
+        } else {
+            $filteredItems = $sheets;
+        }
+
+        return $this->convertToAssociativeArray($filteredItems, $headers);
+    }
+
+
     public function writeAuthor($values): AppendValuesResponse
     {
         return $this->writeSheet('authors', $values);
@@ -152,30 +182,4 @@ class GoogleSheetService
 
         return $projects;
     }
-
-    public function getCommentsByProjectId($projectId): array
-    {
-        $comments = $this->readSheet('comments');
-
-        $commentHeaders = array_shift($comments);
-
-        $comments = $this->convertToAssociativeArray($comments, $commentHeaders);
-
-        return array_filter($comments, function ($comment) use ($projectId) {
-            return $comment['project_id'] == $projectId;
-        });
-    }
-
-    public function getProjectsBySectionId($sectionId): array
-    {
-        $projects = $this->readSheet($this->projectSheetName);
-        $projectHeaders = array_shift($projects);
-        $projects = $this->convertToAssociativeArray($projects, $projectHeaders);
-
-        return array_filter($projects, function ($project) use ($sectionId) {
-            return $project['section_id'] === $sectionId;
-        });
-    }
-
-
 }

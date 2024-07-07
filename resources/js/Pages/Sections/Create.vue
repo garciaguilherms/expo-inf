@@ -1,45 +1,43 @@
 <template>
-    <Head title="Criar Projeto" />
+    <Head title="Criar seção" />
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <div class="p-6 text-gray-900">
-                            <form @submit.prevent="isEditing ? updateSection() : addSection()">
-                                <div class="form-group">
-                                    <label for="title">Título</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="title"
-                                        v-model="sectionData.title"
-                                        required
-                                    />
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Descrição</label>
-                                    <textarea
-                                        class="form-control"
-                                        id="description"
-                                        v-model="sectionData.description"
-                                        required
-                                    ></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="tag">Tag</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="tag"
-                                        v-model="sectionData.tags"
-                                        required
-                                    />
-                                </div>
-                                <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar seção</button>
-                                <button v-else type="submit" class="btn btn-primary">Atualizar seção</button>
-                            </form>
-                        </div>
+                        <form @submit.prevent="isEditing ? updateSection() : addSection()">
+                            <div class="form-group">
+                                <label for="title">Título</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="title"
+                                    v-model="sectionData.title"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descrição</label>
+                                <textarea
+                                    class="form-control"
+                                    id="description"
+                                    v-model="sectionData.description"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="tag">Tag</label>
+                                <input type="text" class="form-control" id="tag" v-model="sectionData.tags" required />
+                            </div>
+                            <button v-if="!isEditing" type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="isLoading">Criando...</span>
+                                <span v-else>Criar seção</span>
+                            </button>
+                            <button v-else type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="isLoading">Atualizando...</span>
+                                <span v-else>Atualizar seção</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -48,58 +46,56 @@
 </template>
 
 <script>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { Head } from '@inertiajs/vue3'
-import { mapGetters } from 'vuex'
-import { useToastr } from '@/toastr'
-
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { useToastr } from '@/toastr';
 export default {
     components: {
         AuthenticatedLayout,
-        Head
+        Head,
     },
     data() {
         return {
-            sectionData: this.isEditing ? this.initialSectionData : {}
-        }
+            sectionData: this.isEditing ? this.initialSectionData : {},
+            isLoading: false,
+        };
     },
     props: ['initialSectionData', 'isEditing'],
-    computed: {
-        ...mapGetters({
-            sectionData: 'sections/sectionData'
-        })
-    },
     methods: {
         addSection() {
+            this.isLoading = true;
             this.$store
                 .dispatch('sections/addSection', this.sectionData)
                 .then(() => {
-                    useToastr().success('Seção criada com sucesso!')
+                    useToastr().success('Seção criada com sucesso!');
+                    this.isLoading = false;
+                    this.$inertia.get('/sections');
                 })
                 .catch(error => {
-                    useToastr().error('Erro ao criar seção!')
-                    console.error('Error creating section:', error)
-                })
-                .finally(() => {
-                    this.$inertia.get('/sections')
-                })
+                    useToastr().error('Erro ao criar seção!');
+                    console.error('Error creating section:', error);
+                    this.isLoading = false;
+                });
         },
         updateSection() {
+            this.isLoading = true;
             this.$store
                 .dispatch('sections/updateSection', this.sectionData)
                 .then(() => {
-                    this.$store.commit('sections/updateSectionData', this.sectionData)
-                    useToastr().success('Seção atualizada com sucesso!')
+                    this.$store.commit('sections/updateSectionData', this.sectionData);
+                    useToastr().success('Seção atualizada com sucesso!');
                 })
                 .catch(() => {
-                    useToastr().error('Erro ao atualizar seção!')
+                    useToastr().error('Erro ao atualizar seção!');
+                    this.isLoading = false;
                 })
                 .finally(() => {
-                    this.$inertia.get('/sections')
-                })
-        }
-    }
-}
+                    this.isLoading = false;
+                    this.$inertia.get('/sections');
+                });
+        },
+    },
+};
 </script>
 
 <style scoped>
@@ -129,5 +125,10 @@ export default {
     background-color: #000000;
     color: white;
     cursor: pointer;
+}
+
+.btn:disabled {
+    background-color: #555555;
+    cursor: not-allowed;
 }
 </style>

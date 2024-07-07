@@ -30,6 +30,10 @@ Route::get('/homepage', function () {
     ]);
 });
 
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
+
+// Projects
 Route::get('/', function (GoogleSheetService $googleSheetService) {
     $projects = $googleSheetService->getProjects();
     return Inertia::render('Dashboard', [
@@ -37,11 +41,7 @@ Route::get('/', function (GoogleSheetService $googleSheetService) {
     ]);
 })->name('dashboard');
 
-Route::get('/users', [UserController::class, 'index'])
-    ->name('users.index');
-
-Route::get('/projects/search/{term}', [ProjectController::class, 'search'])
-    ->name('search');
+Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
 
 Route::get('/projects', [ProjectController::class, 'index'])
     ->name('projects.index');
@@ -75,6 +75,8 @@ Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
 Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
 
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
+
+Route::get('/sections/search', [SectionController::class, 'search'])->name('sections.search');
 
 Route::get('/sections/create', [SectionController::class, 'create'])
     ->middleware(['auth', 'verified'])

@@ -26,10 +26,9 @@ class SectionController extends Controller
         $sectionsHeader = array_shift($sections);
         $sections = $this->googleSheetService->convertToAssociativeArray($sections, $sectionsHeader);
 
-
         foreach ($sections as &$section) {
             $sectionId = $section['id'];
-            $projects = $this->googleSheetService->getProjectsBySectionId($sectionId);
+            $projects = $this->googleSheetService->getRelationsById($sectionId, 'projects', 'section_id');
             $section['projects'] = $projects;
         }
 
@@ -132,31 +131,31 @@ class SectionController extends Controller
         ])->with('isEditing', true);
     }
 
-    public function update(Request $request, $sectionId): RedirectResponse
+    public function update(Request $request, $sectionId): JsonResponse
     {
-        $sectionData = [
-            'id' => $request->input('id'),
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'tags' => $request->input('tags'),
-            'created_at' => $request->input('created_at'),
-            'updated_at' => $request->input('updated_at'),
-            'created_by' => $request->input('created_by'),
-        ];
-
-        $sectionData = array_filter($sectionData, function ($value) {
-            return $value !== null;
-        });
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'tags' => 'required|string',
+        ]);
 
         $rowIndex = $this->googleSheetService->findRowIndexById($sectionId, $this->sectionSheetName);
 
         if ($rowIndex === null) {
-            return redirect()->back()->with('error', 'Projeto não encontrado na planilha.');
+            return response()->json(['message' => 'Seção não encontrada.']);
         }
+
+        $sectionData = [
+            'id' => $sectionId,
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'tags' => $validatedData['tags'],
+            'updated_at' => now()->toDateTimeString(),
+        ];
 
         $this->googleSheetService->updateSheet($this->sectionSheetName, $rowIndex, $sectionData);
 
-        return redirect()->route('sections.index');
+        return response()->json(['message' => 'Seção atualizada com sucesso.']);
     }
 
     public function destroy($rowIndex): RedirectResponse
@@ -167,5 +166,11 @@ class SectionController extends Controller
             $this->googleSheetService->deleteSheetRow($this->sectionSheetName, $row);
         }
         return redirect()->route('sections.index');
+    }
+
+    public function search(Request $request): array
+    {
+        $term = $request->query('term');
+        return $this->googleSheetService->searchSheets($term, $this->sectionSheetName);
     }
 }

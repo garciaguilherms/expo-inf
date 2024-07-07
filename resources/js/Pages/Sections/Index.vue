@@ -1,7 +1,20 @@
 <template>
+    <Head title="Seções" />
     <AuthenticatedLayout>
         <div class="section-container">
-            <ul class="section-grid justify-content-center">
+            <div class="search-box">
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        class="search"
+                        placeholder="Pesquisar seções"
+                        v-model="term"
+                        @keyup.enter="searchSections"
+                    />
+                </div>
+                <button @click="searchSections" class="btn">Pesquisar</button>
+            </div>
+            <ul class="section-grid p-0 m-8 gap-4">
                 <li v-for="section in sectionList" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
@@ -29,11 +42,19 @@
                             <h2 class="section-title" @click="$inertia.visit('/sections/' + section.id)">
                                 {{ section.title }}
                             </h2>
-                            <p class="section-subtitle">
+                            <p class="section-subtitle" v-if="section.projects && Object.keys(section.projects).length">
                                 {{ section.description?.slice(0, 200)
                                 }}{{ section.description?.length > 200 ? '...' : '' }}
                             </p>
+                            <p class="section-subtitle" v-else>
+                                {{ section.description?.slice(0, 500)
+                                }}{{ section.description?.length > 500 ? '...' : '' }}
+                            </p>
                         </div>
+                        <p v-if="section.projects && Object.keys(section.projects).length" class="projects-description">
+                            Projetos vinculados a essa seção
+                        </p>
+                        <p v-else class="projects-description">Nenhum projeto vinculado a essa seção</p>
                         <ul class="projects-list">
                             <li v-for="project in section.projects" :key="project.id" class="project-card">
                                 <div class="project-content" @click="$inertia.visit('/projects/' + project.id)">
@@ -59,15 +80,17 @@ import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import { useToastr } from '@/toastr';
+import { Head } from '@inertiajs/vue3';
 
 export default {
-    components: { Dropdown, AuthenticatedLayout },
+    components: { Head, Dropdown, AuthenticatedLayout },
     props: {
         sections: Array,
     },
     data() {
         return {
             sectionList: this.sections,
+            term: '',
         };
     },
     methods: {
@@ -76,17 +99,34 @@ export default {
                 .delete('/sections/' + id)
                 .then(() => {
                     this.sectionList = this.sectionList.filter(section => section.id !== id);
+                    useToastr().success('Seção excluída com sucesso!');
                 })
                 .catch(error => {
                     console.error('Error deleting project:', error);
-                })
-                .finally(() => {
-                    useToastr().success('Seção excluída com sucesso!');
-                    this.$inertia.get('/sections');
                 });
         },
         updateSection(id) {
             this.$inertia.visit('/sections/' + id + '/edit');
+        },
+        searchSections() {
+            axios
+                .get('/sections/search', {
+                    params: { term: this.term },
+                })
+                .then(response => {
+                    this.sectionList = response.data;
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error('Error searching sections:', error);
+                });
+        },
+    },
+    watch: {
+        term(newTerm, oldTerm) {
+            if (!newTerm) {
+                this.sectionList = this.sections;
+            }
         },
     },
 };
@@ -95,20 +135,20 @@ export default {
 <style scoped>
 .section-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
+    margin: 3rem auto;
     padding: 20px;
+    max-width: 1200px;
 }
 
 .section-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 20px;
     list-style: none;
-    margin: 0;
-    padding: 0;
-    min-width: 100%;
+    margin-top: 3rem;
 }
 
 .section-item {
@@ -117,6 +157,17 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.section-item:hover {
+    transform: scale(1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .dropdown-trigger {
@@ -143,17 +194,20 @@ export default {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #333;
 }
 
 .section-subtitle {
     font-size: 16px;
     margin-bottom: 10px;
     overflow: hidden;
+    color: #555;
 }
 
 .projects-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .project-card {
@@ -164,11 +218,18 @@ export default {
     cursor: pointer;
     margin-bottom: 10px;
     padding: 10px;
+    background-color: #fff;
+    transition: transform 0.2s;
+}
+
+.project-card:hover {
+    transform: scale(1);
 }
 
 .project-content {
     flex-grow: 1;
     overflow: hidden;
+    padding-right: 10px;
 }
 
 .project-title {
@@ -177,6 +238,8 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 5px;
+    color: #333;
 }
 
 .project-description {
@@ -185,11 +248,92 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #777;
 }
 
 .project-image {
     height: 50px;
+    width: 50px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.search-box {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    min-width: 500px;
+    margin: 0 auto;
+}
+
+.input-wrapper {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.btn {
     margin-left: 10px;
-    width: 80px;
+    margin-top: 1px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #000000;
+    color: white;
+    cursor: pointer;
+    height: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #1f1f1f;
+}
+
+.projects-description {
+    font-size: 14px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 60px;
+    margin: 8px;
+}
+
+@media screen and (max-width: 768px) {
+    .section-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .section-item {
+        min-height: auto;
+    }
+
+    .search-box {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .input-wrapper {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .btn {
+        margin-left: 0;
+    }
 }
 </style>

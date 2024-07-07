@@ -70,8 +70,14 @@
                                         <ProjectCustomization :projectData="projectData" />
                                     </div>
                                 </div>
-                                <button v-if="!isEditing" type="submit" class="btn btn-primary">Criar projeto</button>
-                                <button v-else type="submit" class="btn btn-primary">Atualizar projeto</button>
+                                <button v-if="!isEditing" type="submit" class="btn btn-primary" :disabled="isLoading">
+                                    <span v-if="isLoading">Criando...</span>
+                                    <span v-else>Criar projeto</span>
+                                </button>
+                                <button v-else type="submit" class="btn btn-primary" :disabled="isLoading">
+                                    <span v-if="isLoading">Atualizando...</span>
+                                    <span v-else>Atualizar projeto</span>
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -93,6 +99,7 @@ export default {
     data() {
         return {
             projectData: this.isEditing ? this.initialProjectData : { visibility: true },
+            isLoading: false,
         };
     },
     props: ['initialProjectData', 'isEditing'],
@@ -117,6 +124,7 @@ export default {
     },
     methods: {
         addProject() {
+            this.isLoading = true;
             this.$store
                 .dispatch('projects/addProject', this.projectData)
                 .then(() => {
@@ -126,10 +134,12 @@ export default {
                     useToastr().error('Erro ao criar projeto!');
                 })
                 .finally(() => {
+                    this.isLoading = false;
                     this.$inertia.get('/');
                 });
         },
         updateProject() {
+            this.isLoading = true;
             this.$store
                 .dispatch('projects/updateProject', this.projectData)
                 .then(() => {
@@ -140,6 +150,7 @@ export default {
                     useToastr().error('Erro ao atualizar projeto!');
                 })
                 .finally(() => {
+                    this.isLoading = false;
                     this.$inertia.get('/');
                 });
         },
@@ -179,5 +190,9 @@ export default {
     background-color: #000000;
     color: white;
     cursor: pointer;
+}
+.btn:disabled {
+    background-color: #555555;
+    cursor: not-allowed;
 }
 </style>
