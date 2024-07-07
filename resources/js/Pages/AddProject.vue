@@ -5,81 +5,70 @@
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="form">
                     <div class="p-6 text-gray-900">
-                        <div class="p-6 text-gray-900">
-                            <form @submit.prevent="isEditing ? updateProject() : addProject()">
-                                <div class="row justify-content-center">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <div class="form-group">
-                                                <label for="title">Título</label>
+                        <form @submit.prevent="isEditing ? updateProject() : addProject()">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="title">Título</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="title"
+                                            v-model="projectData.title"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description">Descrição</label>
+                                        <TipTap v-model="projectData.description" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="image">Imagem de capa (URL)</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="image"
+                                            v-model="projectData.image"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Autores</label>
+                                        <div>
+                                            <label v-for="user in users" :key="user.id">
                                                 <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    id="title"
-                                                    v-model="projectData.title"
-                                                    required
+                                                    type="checkbox"
+                                                    v-model="projectData.selectedAuthors"
+                                                    :value="user.id"
                                                 />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="description">Descrição</label>
-                                                <TipTap v-model="projectData.description" />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="image">Imagem de capa (URL)</label>
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    id="image"
-                                                    v-model="projectData.image"
-                                                    required
-                                                />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="author_id"
-                                                    >Autor (É possível adicionar mais autores utilizando o link para
-                                                    convite)</label
-                                                >
-                                                <select
-                                                    class="form-control"
-                                                    id="author"
-                                                    v-model="projectData.author_id"
-                                                    required
-                                                >
-                                                    <option value="" disabled>Selecione o autor</option>
-                                                    <option v-for="user in users" :value="user.id">
-                                                        {{ user.name }}
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="author_id">Seção</label>
-                                                <select
-                                                    class="form-control"
-                                                    id="author"
-                                                    v-model="projectData.section_id"
-                                                >
-                                                    <option value="" disabled>Selecione a seção</option>
-                                                    <option v-for="section in sections" :value="section.id">
-                                                        {{ section.title }}
-                                                    </option>
-                                                </select>
-                                            </div>
+                                                {{ user.name }}
+                                            </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <ProjectCustomization :projectData="projectData" />
+                                    <div class="form-group">
+                                        <label for="section_id">Seção</label>
+                                        <select
+                                            class="form-control"
+                                            id="section_id"
+                                            v-model="projectData.section_id"
+                                            required
+                                        >
+                                            <option value="" disabled>Selecione a seção</option>
+                                            <option v-for="section in sections" :key="section.id" :value="section.id">
+                                                {{ section.title }}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
-                                <button v-if="!isEditing" type="submit" class="btn btn-primary" :disabled="isLoading">
-                                    <span v-if="isLoading">Criando...</span>
-                                    <span v-else>Criar projeto</span>
-                                </button>
-                                <button v-else type="submit" class="btn btn-primary" :disabled="isLoading">
-                                    <span v-if="isLoading">Atualizando...</span>
-                                    <span v-else>Atualizar projeto</span>
-                                </button>
-                            </form>
-                        </div>
+                                <div class="col-md-6">
+                                    <ProjectCustomization :projectData="projectData" />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="isLoading">{{ isEditing ? 'Atualizando...' : 'Criando...' }}</span>
+                                <span v-else>{{ isEditing ? 'Atualizar projeto' : 'Criar projeto' }}</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -98,7 +87,15 @@ import TipTap from '@/Components/TipTap.vue';
 export default {
     data() {
         return {
-            projectData: this.isEditing ? this.initialProjectData : { visibility: true },
+            projectData: this.isEditing
+                ? this.initialProjectData
+                : {
+                      title: '',
+                      description: '',
+                      image: '',
+                      selectedAuthors: [],
+                      section_id: '',
+                  },
             isLoading: false,
         };
     },
@@ -125,6 +122,7 @@ export default {
     methods: {
         addProject() {
             this.isLoading = true;
+            this.projectData.author_id = this.projectData.selectedAuthors;
             this.$store
                 .dispatch('projects/addProject', this.projectData)
                 .then(() => {
@@ -132,6 +130,7 @@ export default {
                 })
                 .catch(() => {
                     useToastr().error('Erro ao criar projeto!');
+                    this.isLoading = false;
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -140,10 +139,10 @@ export default {
         },
         updateProject() {
             this.isLoading = true;
+            this.projectData.author_id = this.projectData.selectedAuthors;
             this.$store
                 .dispatch('projects/updateProject', this.projectData)
                 .then(() => {
-                    this.$store.commit('projects/updateProjectData', this.projectData);
                     useToastr().success('Projeto atualizado com sucesso!');
                 })
                 .catch(() => {

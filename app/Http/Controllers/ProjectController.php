@@ -60,13 +60,13 @@ class ProjectController extends Controller
             ->with('isEditing', false);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
             'image' => 'required|url',
-            'author_id' => 'required|string',
+            'author_id.*' => 'required|string',
             'section_id' => 'required|string',
         ]);
 
@@ -82,26 +82,24 @@ class ProjectController extends Controller
             'background_image' => $request->input('background_image'),
         ];
 
-        $this->googleSheetService->writeSheet($this->projectSheetName, $projectData);
+        $this->googleSheetService->writeProjectSheet($this->projectSheetName, $projectData);
 
-        $authorId = $validatedData['author_id'];
+        foreach ($validatedData['author_id'] as $authorId) {
+            $authorRow = $this->googleSheetService->findRowById('users', $authorId);
+            $authorData = $this->googleSheetService->readSheet('users')[$authorRow - 1];
+            $authorName = $authorData[1];
 
-        $authorRow = $this->googleSheetService->findRowById('users', $authorId);
-
-        $authorData = $this->googleSheetService->readSheet('users')[$authorRow - 1];
-
-        $authorName = $authorData[1];
-
-        $authorData = [
-                'id' => uniqid(),
-                'project_id' => $projectData['id'],
-                'user_id' => $authorId,
-                'name' => $authorName,
-                'created_at' => now()->toDateTimeString(),
-                'updated_at' => now()->toDateTimeString()
-            ];
-
-        $this->googleSheetService->writeAuthor($authorData);
+            if ($authorRow) {
+                $authorData = [
+                    'project_id' => $projectData['id'],
+                    'user_id' => $authorId,
+                    'name' => $authorName,
+                    'created_at' => now()->toDateTimeString(),
+                    'updated_at' => now()->toDateTimeString()
+                ];
+                $this->googleSheetService->writeAuthor($authorData);
+            }
+        }
 
         $sectionId = $validatedData['section_id'];
 
@@ -118,7 +116,7 @@ class ProjectController extends Controller
             }
         }
 
-        return redirect()->route('projects.index');
+        return response()->json(['message' => 'Projeto criado com sucesso!']);
     }
 
     public function edit($rowIndex): Response
