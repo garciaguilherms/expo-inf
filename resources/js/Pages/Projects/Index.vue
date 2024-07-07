@@ -3,24 +3,42 @@
     <div>
         <div class="search-box">
             <div class="input-wrapper">
-                <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term" @keyup.enter="searchProjects" />
+                <input
+                    type="text"
+                    class="search"
+                    placeholder="Pesquisar projetos"
+                    v-model="term"
+                    @keyup.enter="searchProjects"
+                />
             </div>
             <button @click="searchProjects" class="btn">Pesquisar</button>
         </div>
         <div class="project-list">
             <ul class="flex justify-center md:flex-row flex-wrap p-0 m-8 gap-4 list-none">
-                <li v-for="project in projectList" :key="project.id" class="project-item" :class="{ 'is-deleting': project.id === deletingProjectId }">
+                <li
+                    v-for="project in projectList"
+                    :key="project.id"
+                    class="project-item"
+                    :class="{ 'is-deleting': project.id === deletingProjectId }"
+                >
                     <div class="project-content">
-                        <Dropdown align="right" width="48"
-                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id ||
-                                  (project.authors && project.authors.some(author => author.user_id === $page.props.auth.user.id)))">
+                        <Dropdown
+                            align="right"
+                            width="48"
+                            v-if="
+                                $page.props.auth.user &&
+                                (project.created_by === $page.props.auth.user.id ||
+                                    (project.authors &&
+                                        project.authors.some(author => author.user_id === $page.props.auth.user.id)))
+                            "
+                        >
                             <template #trigger>
                                 <span class="dropdown-trigger">
-                                    <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm"/>
+                                    <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm" />
                                 </span>
                             </template>
                             <template #content>
-                                <div style="display: flex; flex-direction: column;">
+                                <div style="display: flex; flex-direction: column">
                                     <button type="button" @click="deleteProject(project.id)" class="delete-button">
                                         <span v-if="deletingProjectId === project.id && isLoading">Excluindo...</span>
                                         <span v-else>Excluir</span>
@@ -32,20 +50,23 @@
                             </template>
                         </Dropdown>
                         <div class="cursor-pointer" @click="$inertia.visit('/projects/' + project.id)">
-                            <img :src="project.image" class="project-image" alt="Imagem do projeto"/>
+                            <img :src="project.image" class="project-image" alt="Imagem do projeto" />
                             <div class="delete-overlay" v-if="deletingProjectId === project.id && isLoading">
                                 Excluindo...
                             </div>
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
+                            <p class="project-author">Criado {{ formatDate(project.created_at) }}</p>
                             <p class="project-author">
-                                Criado {{ formatDate(project.created_at) }}
-                            </p>
-                            <p class="project-author">
-                                <ul>Autores:
-                                    <li v-for="author in project.authors" :key="author.id">{{ author.name }}</li>
-                                </ul>
+                                Autores:
+                                <template v-for="(author, index) in project.authors" :key="author.id">
+                                    <span v-if="index === 0">{{ author.name }}</span>
+                                    <span v-else-if="index === 1">, {{ author.name }}</span>
+                                    <span v-if="index === 2 && project.authors.length > 2">
+                                        e mais {{ project.authors.length - 2 }}
+                                    </span>
+                                </template>
                             </p>
                         </div>
                     </div>
@@ -57,11 +78,11 @@
 
 <script>
 import axios from 'axios';
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import DropdownLink from "@/Components/DropdownLink.vue";
-import Dropdown from "@/Components/Dropdown.vue";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import Dropdown from '@/Components/Dropdown.vue';
 import moment from 'moment';
-import { useToastr } from "@/toastr";
+import { useToastr } from '@/toastr';
 import { Head } from '@inertiajs/vue3';
 
 export default {
@@ -82,7 +103,8 @@ export default {
     },
     components: {
         Head,
-        Dropdown, DropdownLink,
+        Dropdown,
+        DropdownLink,
         FontAwesomeIcon,
         moment,
     },
@@ -90,12 +112,13 @@ export default {
         deleteProject(id) {
             this.deletingProjectId = id;
             this.isLoading = true;
-            axios.delete('/projects/' + id)
+            axios
+                .delete('/projects/' + id)
                 .then(() => {
                     this.projectList = this.projectList.filter(project => project.id !== id);
                     useToastr().success('Projeto excluído com sucesso!');
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error('Erro ao deletar projeto', error);
                 })
                 .finally(() => {
@@ -110,18 +133,19 @@ export default {
             return moment(date).locale('pt-br').fromNow();
         },
         searchProjects() {
-            axios.get('/projects/search', {
-                params: {
-                    term: this.term
-                }
-            })
-                .then((response) => {
+            axios
+                .get('/projects/search', {
+                    params: {
+                        term: this.term,
+                    },
+                })
+                .then(response => {
                     this.projectList = response.data;
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error(error.response);
                 });
-        }
+        },
     },
     watch: {
         term(newTerm, oldTerm) {
@@ -133,7 +157,7 @@ export default {
             if (!newList) {
                 this.projectList = this.projects;
             }
-        }
+        },
     },
 };
 </script>
@@ -221,11 +245,13 @@ input {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 350px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .project-item:hover {
-    transform: scale(1.00);
+    transform: scale(1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -334,5 +360,4 @@ input {
         font-size: 16px;
     }
 }
-
 </style>

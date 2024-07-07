@@ -32,7 +32,7 @@
                                             required
                                         />
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group-author">
                                         <label>Autores</label>
                                         <div>
                                             <label v-for="user in users" :key="user.id">
@@ -40,6 +40,7 @@
                                                     type="checkbox"
                                                     v-model="projectData.selectedAuthors"
                                                     :value="user.id"
+                                                    class="form-group-author-name"
                                                 />
                                                 {{ user.name }}
                                             </label>
@@ -173,6 +174,20 @@ export default {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
+}
+.form-group-author {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+.form-group-author-name {
+    margin-left: 10px;
 }
 .form {
     display: flex;
