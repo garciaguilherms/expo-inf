@@ -42,8 +42,11 @@ class ProjectController extends Controller
             abort(404, 'Projeto não encontrado');
         }
 
-        $comments = $this->googleSheetService->getCommentsByProjectId($projectIndex);
+        $comments = $this->googleSheetService->getRelationsById($projectIndex, 'comments', 'project_id');
 
+        $authors = $this->googleSheetService->getRelationsById($projectIndex, 'authors', 'project_id');
+
+        $project['authors'] = $authors;
         $project['comments'] = $comments;
 
         return Inertia::render('Projects/Project', [
@@ -148,7 +151,7 @@ class ProjectController extends Controller
             ->with('isEditing', true);
     }
 
-    public function update(Request $request, $projectId): RedirectResponse
+    public function update(Request $request, $projectId): JsonResponse
     {
         $projectData = [
             'id' => $request->input('id'),
@@ -170,21 +173,26 @@ class ProjectController extends Controller
         $rowIndex = $this->googleSheetService->findRowIndexById($projectId, $this->projectSheetName);
 
         if ($rowIndex === null) {
-            return redirect()->back()->with('error', 'Projeto não encontrado na planilha.');
+            return response()->json(['message' => 'Projeto não encontrado.']);
         }
 
         $this->googleSheetService->updateSheet($this->projectSheetName, $rowIndex, $projectData);
 
-        return redirect()->route('projects.index');
+        return response()->json(['message' => 'Projeto atualizado com sucesso.']);
     }
 
-    public function destroy($rowIndex): RedirectResponse
+    public function destroy($rowIndex): void
     {
         $row = $this->googleSheetService->findRowIndexById($rowIndex, $this->projectSheetName);
 
         if ($row) {
             $this->googleSheetService->deleteSheetRow($this->projectSheetName, $row);
         }
-        return redirect()->route('projects.index');
+    }
+
+    public function search(Request $request): array
+    {
+        $term = $request->query('term');
+        return $this->googleSheetService->searchSheets($term, $this->projectSheetName);
     }
 }

@@ -1,15 +1,19 @@
 <template>
+    <Head title="Projetos" />
     <div>
         <div class="search-box">
-            <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term"/>
+            <div class="input-wrapper">
+                <input type="text" class="search" placeholder="Pesquisar projetos" v-model="term" @keyup.enter="searchProjects" />
+            </div>
             <button @click="searchProjects" class="btn">Pesquisar</button>
         </div>
         <div class="project-list">
-            <ul class="flex justify-center flex-col md:flex-row flex-wrap p-0 m-8 gap-4 list-none">
-                <li v-for="project in projectList" :key="project.id" class="project-item">
+            <ul class="flex justify-center md:flex-row flex-wrap p-0 m-8 gap-4 list-none">
+                <li v-for="project in projectList" :key="project.id" class="project-item" :class="{ 'is-deleting': project.id === deletingProjectId }">
                     <div class="project-content">
                         <Dropdown align="right" width="48"
-                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id || (project.authors && project.authors.some(author => author.user_id === $page.props.auth.user.id)))">
+                                  v-if="$page.props.auth.user && (project.created_by === $page.props.auth.user.id ||
+                                  (project.authors && project.authors.some(author => author.user_id === $page.props.auth.user.id)))">
                             <template #trigger>
                                 <span class="dropdown-trigger">
                                     <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" size="sm"/>
@@ -18,7 +22,8 @@
                             <template #content>
                                 <div style="display: flex; flex-direction: column;">
                                     <button type="button" @click="deleteProject(project.id)" class="delete-button">
-                                        Excluir
+                                        <span v-if="deletingProjectId === project.id && isLoading">Excluindo...</span>
+                                        <span v-else>Excluir</span>
                                     </button>
                                     <button type="button" @click="updateProject(project.id)" class="delete-button">
                                         Editar
@@ -28,6 +33,9 @@
                         </Dropdown>
                         <div class="cursor-pointer" @click="$inertia.visit('/projects/' + project.id)">
                             <img :src="project.image" class="project-image" alt="Imagem do projeto"/>
+                            <div class="delete-overlay" v-if="deletingProjectId === project.id && isLoading">
+                                Excluindo...
+                            </div>
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
@@ -48,13 +56,13 @@
 </template>
 
 <script>
-import StarRating from 'vue-star-rating';
 import axios from 'axios';
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import moment from 'moment';
-import {useToastr} from "@/toastr";
+import { useToastr } from "@/toastr";
+import { Head } from '@inertiajs/vue3';
 
 export default {
     props: {
@@ -68,26 +76,32 @@ export default {
             selectedRating: 0,
             userRating: 0,
             term: '',
+            isLoading: false,
+            deletingProjectId: null,
         };
     },
     components: {
+        Head,
         Dropdown, DropdownLink,
         FontAwesomeIcon,
-        StarRating,
         moment,
     },
     methods: {
         deleteProject(id) {
+            this.deletingProjectId = id;
+            this.isLoading = true;
             axios.delete('/projects/' + id)
                 .then(() => {
                     this.projectList = this.projectList.filter(project => project.id !== id);
-                })
-                .catch((error) => {
-                    console.error('Error deleting project:', error);
-                })
-                .finally(() => {
                     useToastr().success('Projeto excluído com sucesso!');
                 })
+                .catch((error) => {
+                    console.error('Erro ao deletar projeto', error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                    this.deletingProjectId = null;
+                });
         },
         updateProject(id) {
             this.$inertia.get('/projects/' + id + '/edit');
@@ -96,7 +110,11 @@ export default {
             return moment(date).locale('pt-br').fromNow();
         },
         searchProjects() {
-            axios.get('/projects/search/' + this.term)
+            axios.get('/projects/search', {
+                params: {
+                    term: this.term
+                }
+            })
                 .then((response) => {
                     this.projectList = response.data;
                 })
@@ -104,13 +122,23 @@ export default {
                     console.error(error.response);
                 });
         }
-    }
+    },
+    watch: {
+        term(newTerm, oldTerm) {
+            if (!newTerm) {
+                this.projectList = this.projects;
+            }
+        },
+        projectList(newList, oldList) {
+            if (!newList) {
+                this.projectList = this.projects;
+            }
+        }
+    },
 };
-
 </script>
 
 <style scoped>
-
 .dropdown-trigger {
     display: flex;
     justify-content: flex-end;
@@ -124,22 +152,45 @@ input {
     border: none;
     border-radius: 8px;
     margin-bottom: 40px;
+    padding: 10px;
+    font-size: 16px;
 }
 
 .search-box {
     display: flex;
     justify-content: center;
     padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    min-width: 500px;
+    margin: 0 auto;
+}
+
+.input-wrapper {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
 }
 
 .search {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
+    padding: 10px;
+    flex-grow: 1;
 }
 
 .btn {
     margin-left: 10px;
+    margin-top: 1px;
     padding: 10px;
     border-radius: 5px;
     border: none;
@@ -147,6 +198,11 @@ input {
     color: white;
     cursor: pointer;
     height: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #1f1f1f;
 }
 
 .project-info {
@@ -165,6 +221,12 @@ input {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 350px;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-item:hover {
+    transform: scale(1.00);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .project-content {
@@ -207,5 +269,70 @@ input {
     font-weight: bold;
 }
 
-</style>
+.delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
 
+.project-item.is-deleting {
+    filter: brightness(70%);
+}
+
+@media screen and (max-width: 768px) {
+    .search-box {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .project-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .project-item {
+        width: calc(100% - 20px);
+        max-width: 100%;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+
+    .project-image {
+        width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .search {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+}
+
+</style>
