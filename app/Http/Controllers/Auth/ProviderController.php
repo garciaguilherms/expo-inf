@@ -3,45 +3,55 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
 class ProviderController extends Controller
 {
+    protected UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function redirect($provider)
     {
         return Socialite::driver($provider)
-            ->with([
-                'hd' => 'inf.ufsm.br'
-            ])
             ->redirect();
     }
 
-    public function callback($provider)
+    public function callback($provider): \Illuminate\Http\RedirectResponse
     {
-        $user = Socialite::driver($provider)->user();
+        $socialUser = Socialite::driver($provider)->user();
 
-        if (explode("@", $user->getEmail())[1] !== 'inf.ufsm.br') {
-            return redirect()->to('/login');
+        $existingUser = $this->userRepository->getUserByEmail($socialUser->getEmail());
+        if ($existingUser !== null) {
+            $user = $existingUser;
+        } else {
+            $id = uniqid();
+
+            $userData = [
+                'id' => $id,
+                'name' => $socialUser->getName(),
+                'email' => $socialUser->getEmail(),
+                'password' => null,
+                'created_at' => date('Y-m-d H:i:s'),
+                'provider_id' => $socialUser->getId(),
+                'provider' => $provider,
+                'provider_token' => $socialUser->token,
+            ];
+
+            $this->userRepository->createUser($userData);
+
+            $user = (object) $userData;
         }
 
-        $user = User::updateOrCreate(
-            [
-                'provider_id' => $user->id,
-                'provider' => $provider,
-            ],
-            [
-                'name' => $user->getName(),
-                'email' => $user->getEmail(),
-                'provider_token' => $user->token
-            ]
-        );
-
-        Auth::login($user);
+        Auth::loginUsingId($user->id);
 
         return redirect()->route('dashboard');
     }
-
 }

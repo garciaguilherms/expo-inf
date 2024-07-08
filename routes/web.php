@@ -18,8 +18,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect']);
-Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback']);
+Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect'])
+    ->name('auth.redirect');
+
+Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback'])
+    ->name('auth.callback');
 
 Route::get('/homepage', function () {
     return Inertia::render('Welcome', [

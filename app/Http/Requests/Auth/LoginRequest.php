@@ -88,23 +88,4 @@ class LoginRequest extends FormRequest
     {
         return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
     }
-
-    public function getUserByEmail($email): ?array
-    {
-        $sheet = Sheets::spreadsheet(config('google.spreadsheet_id'))->sheet('users');
-
-        $rows = $sheet->all();
-
-        $headers = array_shift($rows);
-
-        foreach ($rows as $row) {
-            if (count($row) === count($headers)) {
-                $user = array_combine($headers, $row);
-                if (isset($user['email']) && $user['email'] === $email) {
-                    return $user;
-                }
-            }
-        }
-        return null;
-    }
 }

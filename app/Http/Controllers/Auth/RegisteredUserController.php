@@ -42,6 +42,9 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'created_at' => 'date',
+            'provider_id' => 'nullable|string',
+            'provider' => 'nullable|string',
+            'provider_token' => 'nullable|string',
         ]);
 
         // Verifica se o email já existe na planilha
@@ -60,6 +63,9 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'created_at' => date('Y-m-d H:i:s'),
+            'provider_id' => 'null',
+            'provider' => 'null',
+            'provider_token' => 'null',
         ];
 
         $this->userRepository->createUser($userData);
@@ -71,6 +77,9 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => $userData['password'],
             'created_at' => $userData['created_at'],
+            'provider_id' => 'null',
+            'provider' => 'null',
+            'provider_token' => 'null',
         ];
 
         event(new Registered($user));
