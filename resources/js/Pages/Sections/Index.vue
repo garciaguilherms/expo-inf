@@ -14,7 +14,7 @@
                 </div>
                 <button @click="searchSections" class="btn">Pesquisar</button>
             </div>
-            <ul class="section-grid p-0 m-8 gap-4">
+            <ul class="section-grid">
                 <li v-for="section in sectionList" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
@@ -56,7 +56,11 @@
                         </p>
                         <p v-else class="projects-description">Nenhum projeto vinculado a essa seção</p>
                         <ul class="projects-list">
-                            <li v-for="project in section.projects" :key="project.id" class="project-card">
+                            <li
+                                v-for="(project, index) in section.projects.slice(0, 3)"
+                                :key="project.id"
+                                class="project-card"
+                            >
                                 <div class="project-content" @click="$inertia.visit('/projects/' + project.id)">
                                     <div class="project-title">
                                         {{ project.title }}
@@ -66,6 +70,9 @@
                                     </div>
                                 </div>
                                 <img :src="project.image" class="project-image" alt="Capa do projeto" />
+                            </li>
+                            <li v-if="section.projects.length > 3" class="more-projects">
+                                E mais {{ section.projects.length - 3 }} projetos
                             </li>
                         </ul>
                     </div>
@@ -307,6 +314,13 @@ export default {
     text-overflow: ellipsis;
     max-height: 60px;
     margin: 8px;
+}
+
+.more-projects {
+    font-size: 14px;
+    color: #888;
+    font-weight: bold;
+    text-align: center;
 }
 
 @media screen and (max-width: 768px) {
