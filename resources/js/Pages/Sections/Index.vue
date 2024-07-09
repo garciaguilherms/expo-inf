@@ -57,7 +57,7 @@
                         <p v-else class="projects-description">Nenhum projeto vinculado a essa seção</p>
                         <ul class="projects-list">
                             <li
-                                v-for="(project, index) in section.projects.slice(0, 3)"
+                                v-for="(project, index) in section.projects.slice(0, 2)"
                                 :key="project.id"
                                 class="project-card"
                             >
@@ -71,8 +71,8 @@
                                 </div>
                                 <img :src="project.image" class="project-image" alt="Capa do projeto" />
                             </li>
-                            <li v-if="section.projects.length > 3" class="more-projects">
-                                E mais {{ section.projects.length - 3 }} projetos
+                            <li v-if="section.projects.length > 2" class="more-projects">
+                                E mais {{ section.projects.length - 2 }} projetos
                             </li>
                         </ul>
                     </div>
