@@ -26,7 +26,7 @@
                                     :href="route('sections.index')"
                                     :active="route().current('sections.index')"
                                 >
-                                    Seções
+                                    Galerias
                                 </DropdownLink>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                                             Criar Projeto
                                         </DropdownLink>
                                         <DropdownLink :href="route('sections.create')" method="get" as="button">
-                                            Criar Seção
+                                            Criar Galeria
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Sair
@@ -89,7 +89,7 @@
                                     Projetos
                                 </NavLink>
                                 <NavLink :href="route('sections.index')" :active="route().current('sections.index')">
-                                    Seções
+                                    Galerias
                                 </NavLink>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                                                 Criar Projeto
                                             </DropdownLink>
                                             <DropdownLink :href="route('sections.create')" method="get" as="button">
-                                                Criar Seção
+                                                Criar Galeria
                                             </DropdownLink>
                                             <DropdownLink :href="route('logout')" method="post" as="button">
                                                 Sair

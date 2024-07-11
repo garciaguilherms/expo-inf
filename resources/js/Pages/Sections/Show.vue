@@ -8,7 +8,7 @@
                     <p>{{ section.description }}</p>
                 </div>
                 <div class="p-6 text-gray-900">
-                    <h1 class="text-1xl text-gray-700 font-bold mb-4">Projetos vinculados a essa seção:</h1>
+                    <h1 class="text-1xl text-gray-700 font-bold mb-4">Projetos vinculados a essa galeria:</h1>
                     <ProjectsIndex :projects="section.projects" />
                 </div>
             </div>

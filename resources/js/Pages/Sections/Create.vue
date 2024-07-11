@@ -1,5 +1,5 @@
 <template>
-    <Head title="Criar seção" />
+    <Head title="Criar galeria" />
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -31,11 +31,11 @@
                             </div>
                             <button v-if="!isEditing" type="submit" class="btn btn-primary" :disabled="isLoading">
                                 <span v-if="isLoading">Criando...</span>
-                                <span v-else>Criar seção</span>
+                                <span v-else>Criar galeria</span>
                             </button>
                             <button v-else type="submit" class="btn btn-primary" :disabled="isLoading">
                                 <span v-if="isLoading">Atualizando...</span>
-                                <span v-else>Atualizar seção</span>
+                                <span v-else>Atualizar galeria</span>
                             </button>
                         </form>
                     </div>
@@ -67,12 +67,12 @@ export default {
             this.$store
                 .dispatch('sections/addSection', this.sectionData)
                 .then(() => {
-                    useToastr().success('Seção criada com sucesso!');
+                    useToastr().success('Galeria criada com sucesso!');
                     this.isLoading = false;
                     this.$inertia.get('/sections');
                 })
                 .catch(error => {
-                    useToastr().error('Erro ao criar seção!');
+                    useToastr().error('Erro ao criar galeria!');
                     console.error('Error creating section:', error);
                     this.isLoading = false;
                 });
@@ -83,10 +83,10 @@ export default {
                 .dispatch('sections/updateSection', this.sectionData)
                 .then(() => {
                     this.$store.commit('sections/updateSectionData', this.sectionData);
-                    useToastr().success('Seção atualizada com sucesso!');
+                    useToastr().success('Galeria atualizada com sucesso!');
                 })
                 .catch(() => {
-                    useToastr().error('Erro ao atualizar seção!');
+                    useToastr().error('Erro ao atualizar galeria!');
                     this.isLoading = false;
                 })
                 .finally(() => {

@@ -1,5 +1,5 @@
 <template>
-    <Head title="Seções" />
+    <Head title="Galerias" />
     <AuthenticatedLayout>
         <div class="section-container">
             <div class="search-box">
@@ -7,7 +7,7 @@
                     <input
                         type="text"
                         class="search"
-                        placeholder="Pesquisar seções"
+                        placeholder="Pesquisar galerias"
                         v-model="term"
                         @keyup.enter="searchSections"
                     />
@@ -52,9 +52,9 @@
                             </p>
                         </div>
                         <p v-if="section.projects && Object.keys(section.projects).length" class="projects-description">
-                            Projetos vinculados a essa seção
+                            Projetos vinculados a essa galeria
                         </p>
-                        <p v-else class="projects-description">Nenhum projeto vinculado a essa seção</p>
+                        <p v-else class="projects-description">Nenhum projeto vinculado a essa galeria</p>
                         <ul class="projects-list">
                             <li
                                 v-for="(project, index) in section.projects.slice(0, 2)"
@@ -106,7 +106,7 @@ export default {
                 .delete('/sections/' + id)
                 .then(() => {
                     this.sectionList = this.sectionList.filter(section => section.id !== id);
-                    useToastr().success('Seção excluída com sucesso!');
+                    useToastr().success('Galeria excluída com sucesso!');
                 })
                 .catch(error => {
                     console.error('Error deleting project:', error);

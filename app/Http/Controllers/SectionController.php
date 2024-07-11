@@ -47,12 +47,12 @@ class SectionController extends Controller
         $section = collect($sections)->firstWhere('id', $sectionIndex);
 
         if (!$section) {
-            abort(404, 'Seção não encontrada');
+            abort(404, 'Galeria não encontrada');
         }
 
         // Obter todos os projetos
         $projects = $this->googleSheetService->getProjects();
-        // Filtrar projetos para encontrar os que pertencem a esta seção
+        // Filtrar projetos para encontrar os que pertencem a esta Galeria
         $sectionProjects = array_filter($projects, function ($project) use ($sectionIndex) {
             return $project['section_id'] === $sectionIndex;
         });
@@ -107,7 +107,7 @@ class SectionController extends Controller
         $sections = $this->googleSheetService->readSheet($this->sectionSheetName);
 
         if (empty($sections) || count($sections) < 2) {
-            abort(404, 'Nenhuma seção encontrada');
+            abort(404, 'Nenhuma galeria encontrada');
         }
 
         $sectionHeaders = array_shift($sections);
@@ -123,7 +123,7 @@ class SectionController extends Controller
         }
 
         if (!$targetSection) {
-            abort(404, 'Seção não encontrada');
+            abort(404, 'Galeria não encontrada');
         }
 
         return Inertia::render('Sections/Create', [
@@ -142,7 +142,7 @@ class SectionController extends Controller
         $rowIndex = $this->googleSheetService->findRowIndexById($sectionId, $this->sectionSheetName);
 
         if ($rowIndex === null) {
-            return response()->json(['message' => 'Seção não encontrada.']);
+            return response()->json(['message' => 'Galeria não encontrada.']);
         }
 
         $sectionData = [
@@ -155,7 +155,7 @@ class SectionController extends Controller
 
         $this->googleSheetService->updateSheet($this->sectionSheetName, $rowIndex, $sectionData);
 
-        return response()->json(['message' => 'Seção atualizada com sucesso.']);
+        return response()->json(['message' => 'Galeria atualizada com sucesso.']);
     }
 
     public function destroy($rowIndex): RedirectResponse

@@ -47,14 +47,14 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="section_id">Seção</label>
+                                        <label for="section_id">Galeria</label>
                                         <select
                                             class="form-control"
                                             id="section_id"
                                             v-model="projectData.section_id"
                                             required
                                         >
-                                            <option value="" disabled>Selecione a seção</option>
+                                            <option value="" disabled>Selecione a galeria</option>
                                             <option v-for="section in sections" :key="section.id" :value="section.id">
                                                 {{ section.title }}
                                             </option>

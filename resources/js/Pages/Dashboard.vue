@@ -35,7 +35,7 @@
         <!--                    Computação da UFSM exibirem seus trabalhos, receberem feedback e ganharem reconhecimento. Em seu-->
         <!--                    estágio atual, a plataforma permite ao público pesquisar e visualizar projetos. Além disso, usuários-->
         <!--                    cadastrados podem avaliar projetos, com estrelas ou comentários, e também podem adicionar projetos e-->
-        <!--                    criar seções temáticas (por exemplo, para trabalhos de uma disciplina ou de um grupo temático). Com-->
+        <!--                    criar galerias temáticas (por exemplo, para trabalhos de uma disciplina ou de um grupo temático). Com-->
         <!--                    esta plataforma, espera-se aumentar o reconhecimento dos esforços dos estudantes e estimular o-->
         <!--                    desenvolvimento contínuo de habilidades.-->
         <!--                    <br /><br />Convidamos você a explorar esta versão inicial da plataforma e responder ao formulário-->
