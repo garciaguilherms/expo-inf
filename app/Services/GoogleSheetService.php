@@ -129,15 +129,42 @@ class GoogleSheetService
     {
         $sheets = $this->readSheet($sheetName);
         $headers = array_shift($sheets);
+
         if (!empty($term)) {
-            $filteredItems = array_filter($sheets, function($sheet) use ($term) {
-                return isset($sheet[1]) && stripos($sheet[1], $term) !== false;
+            $filteredItems = array_filter($sheets, function($sheet) use ($term, $sheetName) {
+                if ($sheetName === 'sections') {
+                    return (isset($sheet[1]) && stripos($sheet[1], $term) !== false) ||
+                        (isset($sheet[3]) && stripos($sheet[3], $term) !== false);
+                } else {
+                    return isset($sheet[1]) && stripos($sheet[1], $term) !== false;
+                }
             });
         } else {
             $filteredItems = $sheets;
         }
+
         return $this->convertToAssociativeArray($filteredItems, $headers);
     }
+
+    public function searchSectionsWithProjects($term): array
+    {
+        $sections = $this->searchSheets($term, 'sections');
+
+        foreach ($sections as &$section) {
+            $sectionId = $section['id'];
+            $projects = $this->getProjectsForSection($sectionId);
+            $section['projects'] = $projects;
+        }
+
+        return $sections;
+    }
+
+    public function getProjectsForSection($sectionId): array
+    {
+        return $this->getRelationsById($sectionId, 'projects', 'section_id');
+
+    }
+
     public function writeAuthor($values): AppendValuesResponse
     {
         return $this->writeSheet('authors', $values);

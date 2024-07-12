@@ -171,6 +171,6 @@ class SectionController extends Controller
     public function search(Request $request): array
     {
         $term = $request->query('term');
-        return $this->googleSheetService->searchSheets($term, $this->sectionSheetName);
+        return $this->googleSheetService->searchSectionsWithProjects($term);
     }
 }

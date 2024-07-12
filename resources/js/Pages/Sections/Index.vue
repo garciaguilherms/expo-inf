@@ -7,7 +7,7 @@
                     <input
                         type="text"
                         class="search"
-                        placeholder="Pesquisar galerias"
+                        placeholder="Pesquise galerias por nome ou tag"
                         v-model="term"
                         @keyup.enter="searchSections"
                     />
@@ -15,7 +15,7 @@
                 <button @click="searchSections" class="btn">Pesquisar</button>
             </div>
             <ul class="section-grid">
-                <li v-for="section in sectionList" :key="section.id" class="section-item">
+                <li v-for="section in processedSections" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
                         width="48"
@@ -100,6 +100,14 @@ export default {
             term: '',
         };
     },
+    computed: {
+        processedSections() {
+            return this.sectionList.map(section => ({
+                ...section,
+                projects: section.projects || [],
+            }));
+        },
+    },
     methods: {
         deleteSection(id) {
             axios
@@ -122,16 +130,20 @@ export default {
                 })
                 .then(response => {
                     this.sectionList = response.data;
-                    console.log(response.data);
                 })
                 .catch(error => {
-                    console.error('Error searching sections:', error);
+                    console.error('Houve um erro ao buscar as galerias:', error);
                 });
         },
     },
     watch: {
         term(newTerm, oldTerm) {
             if (!newTerm) {
+                this.sectionList = this.sections;
+            }
+        },
+        sectionList(newList, oldList) {
+            if (!newList) {
                 this.sectionList = this.sections;
             }
         },

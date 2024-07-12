@@ -6,7 +6,7 @@
                 <input
                     type="text"
                     class="search"
-                    placeholder="Pesquisar projetos"
+                    placeholder="Pesquise projetos"
                     v-model="term"
                     @keyup.enter="searchProjects"
                 />
@@ -143,7 +143,7 @@ export default {
                     this.projectList = response.data;
                 })
                 .catch(error => {
-                    console.error(error.response);
+                    console.error('Houve um erro ao buscar os projetos:', error);
                 });
         },
     },
