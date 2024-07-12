@@ -89,7 +89,12 @@ export default {
     data() {
         return {
             projectData: this.isEditing
-                ? this.initialProjectData
+                ? {
+                      ...this.initialProjectData,
+                      selectedAuthors: this.initialProjectData.author_id
+                          ? this.initialProjectData.author_id.split(', ')
+                          : [],
+                  }
                 : {
                       title: '',
                       description: '',
