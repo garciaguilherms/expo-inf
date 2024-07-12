@@ -57,10 +57,10 @@
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <p class="project-author">Criado {{ formatDate(project.created_at) }}</p>
+                            <p class="project-author">Criado em {{ formatDate(project.created_at) }}</p>
                             <p class="project-author">
                                 Autores:
-                                <template v-if="project.authors.length > 0">
+                                <template v-if="project.authors && project.authors.length > 0">
                                     <span v-for="(author, index) in project.authors" :key="author.id">
                                         {{ author.name }}
                                         <span v-if="index < project.authors.length - 1">, </span>
@@ -79,7 +79,6 @@
 <script>
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import DropdownLink from '@/Components/DropdownLink.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import moment from 'moment';
 import { useToastr } from '@/toastr';
@@ -100,9 +99,7 @@ export default {
     components: {
         Head,
         Dropdown,
-        DropdownLink,
         FontAwesomeIcon,
-        moment,
     },
     methods: {
         deleteProject(id) {
@@ -136,6 +133,7 @@ export default {
                     },
                 })
                 .then(response => {
+                    console.log('Dados recebidos:', response.data);
                     this.projectList = response.data;
                 })
                 .catch(error => {
