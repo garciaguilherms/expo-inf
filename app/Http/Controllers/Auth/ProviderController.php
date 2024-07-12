@@ -50,7 +50,11 @@ class ProviderController extends Controller
             $user = (object) $userData;
         }
 
-        Auth::loginUsingId($user['id']);
+        if (is_array($user)) {
+            $user = (object) $user;
+        }
+
+        Auth::loginUsingId($user->id);
 
         return redirect()->route('dashboard');
     }
