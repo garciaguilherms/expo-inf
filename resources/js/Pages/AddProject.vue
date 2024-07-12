@@ -91,9 +91,7 @@ export default {
             projectData: this.isEditing
                 ? {
                       ...this.initialProjectData,
-                      selectedAuthors: this.initialProjectData.author_id
-                          ? this.initialProjectData.author_id.split(', ')
-                          : [],
+                      selectedAuthors: this.initialProjectData.author_id,
                   }
                 : {
                       title: '',
@@ -156,7 +154,6 @@ export default {
                 })
                 .finally(() => {
                     this.isLoading = false;
-                    this.$inertia.get('/');
                 });
         },
     },

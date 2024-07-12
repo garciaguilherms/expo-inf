@@ -50,9 +50,8 @@ class SectionController extends Controller
             abort(404, 'Galeria não encontrada');
         }
 
-        // Obter todos os projetos
         $projects = $this->googleSheetService->getProjects();
-        // Filtrar projetos para encontrar os que pertencem a esta Galeria
+
         $sectionProjects = array_filter($projects, function ($project) use ($sectionIndex) {
             return $project['section_id'] === $sectionIndex;
         });

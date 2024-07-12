@@ -29,7 +29,7 @@
                                 $page.props.auth.user &&
                                 (project.created_by === $page.props.auth.user.id ||
                                     (project.authors &&
-                                        project.authors.some(author => author.user_id === $page.props.auth.user.id)))
+                                        project.authors.some(author => author.id === $page.props.auth.user.id)))
                             "
                         >
                             <template #trigger>
@@ -60,13 +60,13 @@
                             <p class="project-author">Criado {{ formatDate(project.created_at) }}</p>
                             <p class="project-author">
                                 Autores:
-                                <template v-for="(author, index) in project.authors" :key="author.id">
-                                    <span v-if="index === 0">{{ author.name }}</span>
-                                    <span v-else-if="index === 1">, {{ author.name }}</span>
-                                    <span v-if="index === 2 && project.authors.length > 2">
-                                        e mais {{ project.authors.length - 2 }}
+                                <template v-if="project.authors.length > 0">
+                                    <span v-for="(author, index) in project.authors" :key="author.id">
+                                        {{ author.name }}
+                                        <span v-if="index < project.authors.length - 1">, </span>
                                     </span>
                                 </template>
+                                <template v-else> Nenhum autor associado. </template>
                             </p>
                         </div>
                     </div>
@@ -92,10 +92,6 @@ export default {
     data() {
         return {
             projectList: this.projects,
-            showCommentBox: [],
-            newComment: '',
-            selectedRating: 0,
-            userRating: 0,
             term: '',
             isLoading: false,
             deletingProjectId: null,

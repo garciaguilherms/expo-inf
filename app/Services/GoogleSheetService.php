@@ -29,6 +29,8 @@ class GoogleSheetService
 
     public function writeProjectSheet($sheetName, $values): AppendValuesResponse
     {
+        $authorIds = is_array($values['author_id']) ? implode(',', $values['author_id']) : $values['author_id'];
+
         $formattedValues = [
             [
                 $values['id'],
@@ -36,7 +38,7 @@ class GoogleSheetService
                 $values['description'],
                 $values['image'],
                 $values['section_id'],
-                implode(', ', $values['author_id']),
+                $authorIds,
                 $values['created_at'],
                 $values['updated_at'],
                 $values['background_image'],
@@ -77,8 +79,12 @@ class GoogleSheetService
     public function findRowById($sheetName, $id, $idColumn = 'A'): int|string|null
     {
         $rows = $this->readSheet($sheetName);
+        $headers = array_shift($rows);
+
+        $rows = $this->convertToAssociativeArray($rows, $headers);
+
         foreach ($rows as $index => $row) {
-            if (isset($row[0]) && $row[0] == $id) {
+            if (isset($row['id']) && $row['id'] == $id) {
                 return $index + 1;
             }
         }
@@ -118,13 +124,45 @@ class GoogleSheetService
     }
     public function getRelationsById($id, $relationSheet, $column): array
     {
-        $relations = $this->readSheet($relationSheet);
-        $relationHeaders = array_shift($relations);
-        $relations = $this->convertToAssociativeArray($relations, $relationHeaders);
-        return array_filter($relations, function ($relation) use ($id, $column) {
+        $relations = $this->readSheet($relationSheet); // Lê os dados da planilha
+        $relationHeaders = array_shift($relations); // Remove e obtém os cabeçalhos
+        $relations = $this->convertToAssociativeArray($relations, $relationHeaders); // Converte para array associativo
+
+        // Filtra os relacionamentos baseado no ID e na coluna especificada
+        $filteredRelations = array_filter($relations, function ($relation) use ($id, $column) {
             return $relation[$column] == $id;
         });
+
+        // Retorna apenas os projetos, não o array completo
+        return array_values($filteredRelations);
     }
+    public function getAuthorsByProjectId($projectId): array
+    {
+        $authors = $this->readSheet('authors');
+        $headers = array_shift($authors);
+
+        if (empty($authors)) {
+            return [];
+        }
+
+        return array_filter($authors, function ($author) use ($projectId) {
+            return isset($author[1]) && $author[1] == $projectId;
+        });
+    }
+
+    public function deleteAuthorsByProjectId($projectId): void
+    {
+        $authors = $this->getAuthorsByProjectId($projectId);
+        foreach ($authors as $author) {
+            $authorId = $author[0];
+            $row = $this->findRowIndexById($authorId, 'authors');
+
+            if ($row) {
+                $this->deleteSheetRow('authors', $row);
+            }
+        }
+    }
+
     public function searchSheets($term, $sheetName): array
     {
         $sheets = $this->readSheet($sheetName);
@@ -175,24 +213,35 @@ class GoogleSheetService
     }
     public function getProjects(): array
     {
+        // Ler projetos e usuários
         $projects = $this->readSheet($this->projectSheetName);
-        $authors = $this->readSheet($this->authorSheetName);
+        $users = $this->readSheet('users'); // Supondo que 'users' seja o nome da planilha de usuários
         $projectHeaders = array_shift($projects);
-        $authorHeaders = array_shift($authors);
+        $userHeaders = array_shift($users);
+
+        // Converter para arrays associativos
         $projects = $this->convertToAssociativeArray($projects, $projectHeaders);
-        $authors = $this->convertToAssociativeArray($authors, $authorHeaders);
-        $authorsMap = [];
-        foreach ($authors as $author) {
-            $authorsMap[$author['project_id']][] = $author;
+        $users = $this->convertToAssociativeArray($users, $userHeaders);
+
+        // Mapear usuários pelo ID
+        $usersMap = [];
+        foreach ($users as $user) {
+            $usersMap[$user['id']] = $user;
         }
+
+        // Adicionar autores aos projetos
         foreach ($projects as &$project) {
-            $projectId = $project['id'];
-            if (isset($authorsMap[$projectId])) {
-                $project['authors'] = $authorsMap[$projectId];
-            } else {
-                $project['authors'] = [];
+            $authorIds = explode(',', $project['author_id']); // Obter IDs dos autores do projeto
+            $project['authors'] = [];
+            foreach ($authorIds as $authorId) {
+                $authorId = trim($authorId); // Remover espaços em branco em volta do ID
+                if (isset($usersMap[$authorId])) {
+                    $project['authors'][] = $usersMap[$authorId];
+                }
             }
         }
+
         return $projects;
     }
+
 }

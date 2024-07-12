@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\GoogleSheetService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -44,7 +43,22 @@ class ProjectController extends Controller
 
         $comments = $this->googleSheetService->getRelationsById($projectIndex, 'comments', 'project_id');
 
-        $authors = $this->googleSheetService->getRelationsById($projectIndex, 'authors', 'project_id');
+        $authorIds = explode(',', $project['author_id']);
+
+        $users = $this->googleSheetService->readSheet('users');
+        $userHeaders = array_shift($users);
+        $users = $this->googleSheetService->convertToAssociativeArray($users, $userHeaders);
+
+        $authors = [];
+        foreach ($authorIds as $authorId) {
+            $user = collect($users)->firstWhere('id', trim($authorId));
+            if ($user) {
+                $authors[] = [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                ];
+            }
+        }
 
         $project['authors'] = $authors;
         $project['comments'] = $comments;
@@ -60,7 +74,7 @@ class ProjectController extends Controller
             ->with('isEditing', false);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'title' => 'required|string',
@@ -79,7 +93,7 @@ class ProjectController extends Controller
             'section_id' => $validatedData['section_id'],
             'created_at' => now()->toDateTimeString(),
             'updated_at' => now()->toDateTimeString(),
-            'background_image' => $request->input('background_image'),
+            'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
         ];
 
         $this->googleSheetService->writeProjectSheet($this->projectSheetName, $projectData);
@@ -91,6 +105,7 @@ class ProjectController extends Controller
 
             if ($authorRow) {
                 $authorData = [
+                    'id' => uniqid(),
                     'project_id' => $projectData['id'],
                     'user_id' => $authorId,
                     'name' => $authorName,
@@ -143,6 +158,7 @@ class ProjectController extends Controller
             abort(404, 'Projeto não encontrado');
         }
 
+        $targetProject['author_id'] = explode(',', $targetProject['author_id']);
         return Inertia::render('AddProject', [
             'initialProjectData' => $targetProject,
         ])
@@ -151,6 +167,7 @@ class ProjectController extends Controller
 
     public function update(Request $request, $projectId): JsonResponse
     {
+        // Obter dados do projeto do request
         $projectData = [
             'id' => $request->input('id'),
             'title' => $request->input('title'),
@@ -159,21 +176,27 @@ class ProjectController extends Controller
             'section_id' => $request->input('section_id'),
             'author_id' => $request->input('author_id'),
             'created_at' => $request->input('created_at'),
-            'updated_at' => $request->input('updated_at'),
-            'created_by' => $request->input('created_by'),
-            'background_image' => $request->input('background_image'),
+            'updated_at' => $request->input('updated_at') ?? now()->toDateTimeString(),
+            'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
         ];
 
-        $projectData = array_filter($projectData, function ($value) {
-            return $value !== null;
+        // Remover chaves nulas e 'password' do array de dados do projeto
+        $projectData = array_filter($projectData, function ($key) {
+            return $key !== null && $key !== 'password';
         });
 
+        // Encontrar o índice da linha do projeto na planilha
         $rowIndex = $this->googleSheetService->findRowIndexById($projectId, $this->projectSheetName);
 
         if ($rowIndex === null) {
-            return response()->json(['message' => 'Projeto não encontrado.']);
+            return response()->json(['message' => 'Projeto não encontrado.'], 404);
         }
 
+        // Converter array de IDs de autores em string separada por vírgula
+        $authorIds = is_array($projectData['author_id']) ? implode(',', $projectData['author_id']) : $projectData['author_id'];
+        $projectData['author_id'] = $authorIds;
+
+        // Atualizar a planilha com os novos dados do projeto
         $this->googleSheetService->updateSheet($this->projectSheetName, $rowIndex, $projectData);
 
         return response()->json(['message' => 'Projeto atualizado com sucesso.']);
