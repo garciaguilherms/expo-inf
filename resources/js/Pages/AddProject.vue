@@ -131,6 +131,7 @@ export default {
                 .dispatch('projects/addProject', this.projectData)
                 .then(() => {
                     useToastr().success('Projeto criado com sucesso!');
+                    this.$inertia.get('/');
                 })
                 .catch(() => {
                     useToastr().error('Erro ao criar projeto!');
@@ -138,7 +139,6 @@ export default {
                 })
                 .finally(() => {
                     this.isLoading = false;
-                    this.$inertia.get('/');
                 });
         },
         updateProject() {
@@ -148,6 +148,7 @@ export default {
                 .dispatch('projects/updateProject', this.projectData)
                 .then(() => {
                     useToastr().success('Projeto atualizado com sucesso!');
+                    this.$inertia.get('/');
                 })
                 .catch(() => {
                     useToastr().error('Erro ao atualizar projeto!');
