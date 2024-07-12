@@ -133,7 +133,6 @@ export default {
                     },
                 })
                 .then(response => {
-                    console.log('Dados recebidos:', response.data);
                     this.projectList = response.data;
                 })
                 .catch(error => {

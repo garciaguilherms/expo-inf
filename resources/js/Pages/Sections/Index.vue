@@ -37,6 +37,7 @@
                             </div>
                         </template>
                     </Dropdown>
+                    <div class="delete-overlay" v-if="section.deleting">Excluindo...</div>
                     <div class="section-content">
                         <div class="section-info">
                             <h2 class="section-title" @click="$inertia.visit('/sections/' + section.id)">
@@ -98,6 +99,7 @@ export default {
         return {
             sectionList: this.sections,
             term: '',
+            deletingSectionId: null,
         };
     },
     computed: {
@@ -105,19 +107,25 @@ export default {
             return this.sectionList.map(section => ({
                 ...section,
                 projects: section.projects || [],
+                deleting: section.id === this.deletingSectionId,
             }));
         },
     },
     methods: {
         deleteSection(id) {
+            this.deletingSectionId = id;
             axios
                 .delete('/sections/' + id)
                 .then(() => {
                     this.sectionList = this.sectionList.filter(section => section.id !== id);
-                    useToastr().success('Galeria excluída com sucesso!');
                 })
                 .catch(error => {
-                    console.error('Error deleting project:', error);
+                    console.error('Error deleting section:', error);
+                })
+                .finally(() => {
+                    useToastr().success('Galeria excluída com sucesso!');
+                    this.$inertia.get('/sections');
+                    this.deletingSectionId = null;
                 });
         },
         updateSection(id) {
@@ -170,8 +178,24 @@ export default {
     margin-top: 3rem;
 }
 
+.delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
 .section-item {
     background-color: #f7f7f7;
+    position: relative;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;

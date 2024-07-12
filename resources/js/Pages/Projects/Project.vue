@@ -90,6 +90,9 @@ export default {
                 })
                 .catch(error => {
                     console.error(error.response);
+                })
+                .finally(() => {
+                    this.$inertia.get('/projects/' + projectId);
                 });
         },
         showReplyForm(commentId) {
