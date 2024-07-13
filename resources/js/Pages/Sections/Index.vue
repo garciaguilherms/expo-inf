@@ -163,11 +163,12 @@ export default {
 .section-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 3rem auto;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin: 0 auto; /* Remova margem para evitar espaços extras */
     padding: 20px;
     max-width: 1200px;
+    min-height: 100vh; /* Garante que o container ocupe toda a altura da viewport */
 }
 
 .section-grid {
@@ -175,22 +176,7 @@ export default {
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 20px;
     list-style: none;
-    margin-top: 3rem;
-}
-
-.delete-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 24px;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1;
+    align-content: center;
 }
 
 .section-item {
@@ -206,6 +192,21 @@ export default {
     transition:
         transform 0.3s ease,
         box-shadow 0.3s ease;
+}
+
+.delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
 }
 
 .section-item:hover {
