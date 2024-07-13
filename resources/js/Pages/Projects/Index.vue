@@ -57,7 +57,7 @@
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <p class="project-author">Criado {{ formatDate(project.created_at) }}</p>
+                            <p class="project-author">{{ formatDate(project.created_at) }}</p>
                             <p class="project-author">
                                 Autores:
                                 <template v-if="project.authors && project.authors.length > 0">
@@ -123,7 +123,13 @@ export default {
             this.$inertia.get('/projects/' + id + '/edit');
         },
         formatDate(date) {
-            return moment(date).locale('pt-br').fromNow();
+            const hoursDiff = moment().diff(moment(date), 'hours');
+
+            if (hoursDiff < 24) {
+                return moment(date).locale('pt-br').format('[Criado em] L [às] LT');
+            } else {
+                return moment(date).locale('pt-br').format('[Criado em] L [às] LT');
+            }
         },
         searchProjects() {
             axios
