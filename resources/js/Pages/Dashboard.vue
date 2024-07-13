@@ -41,7 +41,8 @@
                     <br /><br />Convido você a explorar esta versão da plataforma (criando uma conta, projetos, seções e
                     comentários) e responder ao formulário de usabilidade na página principal.
                 </p>
-                <div class="flex justify-end">
+                <div class="flex justify-start md:justify-end">
+                    <!-- Alterei para justify-start padrão e md:justify-end para dispositivos maiores que md -->
                     <button class="bg-black text-white font-bold py-2 px-4 rounded" @click="closeModal">Fechar</button>
                 </div>
             </div>
