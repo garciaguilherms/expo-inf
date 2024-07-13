@@ -11,16 +11,23 @@
         >
             <div class="project-container">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 flex">
+                    <div class="p-6 text-gray-900 flex flex-col lg:flex-row">
+                        <!-- Adicionei flex-col e flex-row para controlar o layout responsivo -->
                         <div class="w-full lg:w-1/3 pr-4">
-                            <div class="image-box">
+                            <!-- Condicional para mostrar a imagem de capa apenas em telas maiores que md -->
+                            <div class="image-box md:flex justify-center">
                                 <img :src="project.image" class="project-image" alt="Imagem do projeto" />
                             </div>
                             <h2 class="project-title">{{ project.title }}</h2>
                             <p class="project-author">Autores do projeto:</p>
-                            <div v-for="author in project.authors" :key="author.id">
+                            <div v-for="author in project.authors.slice(0, 2)" :key="author.id">
+                                <!-- Mostra apenas os dois primeiros autores -->
                                 <p class="project-author">{{ author.name }}</p>
                             </div>
+                            <p v-if="project.authors.length > 2" class="project-author">
+                                e mais {{ project.authors.length - 2 }}
+                            </p>
+                            <!-- Mostra "e mais X" se houver mais autores -->
                             <p class="project-date">Criado {{ formatDate(project.created_at) }}</p>
                         </div>
                         <div class="w-full lg:w-2/3 pl-4">
