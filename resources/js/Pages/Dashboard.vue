@@ -32,14 +32,14 @@
                 <h2 class="text-xl font-bold mb-4">Bem-vindo ao Expo-inf</h2>
                 <p class="mb-4">
                     Esta plataforma visa oferecer um espaço para estudantes de cursos de Computação da UFSM exibirem
-                    seus trabalhos, receberem feedback e ganharem reconhecimento. A plataforma permite ao público
-                    pesquisar e visualizar projetos. Além disso, usuários cadastrados podem deixar comentários, e também
-                    podem adicionar projetos e criar galerias de projetos (tais ações podem ser acessadas clicando no
-                    seu nome de usuário logado no canto superior direito). Com esta plataforma, espera-se aumentar o
-                    reconhecimento dos esforços dos estudantes e estimular o desenvolvimento contínuo de habilidades e
-                    seus projetos.
-                    <br /><br />Convido você a explorar esta versão da plataforma e responder ao formulário de
-                    usabilidade na página principal.
+                    seus trabalhos, receberem feedback e ganharem reconhecimento. Na plataforma, os usuários podem
+                    explorar e visualizar diversos projetos. Usuários cadastrados têm a possibilidade de deixar
+                    comentários em outros projetos, além de poderem adicionar seus próprios trabalhos e criar suas
+                    galerias de projetos. Essas ações estão acessíveis através do seu perfil, localizado no canto
+                    superior direito da tela. Com essa iniciativa, buscamos ampliar o reconhecimento dos esforços dos
+                    estudantes e incentivar o desenvolvimento contínuo de habilidades e projetos.
+                    <br /><br />Convido você a explorar esta versão da plataforma (criando uma conta, projetos, seções e
+                    comentários) e responder ao formulário de usabilidade na página principal.
                 </p>
                 <div class="flex justify-end">
                     <button class="bg-black text-white font-bold py-2 px-4 rounded" @click="closeModal">Fechar</button>
