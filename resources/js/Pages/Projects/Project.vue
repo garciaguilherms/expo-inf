@@ -35,7 +35,10 @@
                                     placeholder="Deixe seu comentário aqui..."
                                     v-model="newComment"
                                 ></textarea>
-                                <button type="submit" class="comment-submit-btn">Enviar</button>
+                                <button type="submit" class="comment-submit-btn" :disabled="commenting">
+                                    <span v-if="commenting">Comentando...</span>
+                                    <span v-else>Enviar</span>
+                                </button>
                             </form>
                             <div class="project-comment-box">
                                 <p class="comment-section-title">Seção de comentários</p>
@@ -72,6 +75,7 @@ export default {
             newComment: '',
             newReply: '',
             replyingTo: null,
+            commenting: false,
         };
     },
     methods: {
@@ -80,6 +84,8 @@ export default {
                 console.error('O campo de texto é obrigatório.');
                 return;
             }
+
+            this.commenting = true;
 
             axios
                 .post('/projects/' + projectId + '/comments', {
@@ -92,6 +98,7 @@ export default {
                     console.error(error.response);
                 })
                 .finally(() => {
+                    this.commenting = false;
                     this.$inertia.get('/projects/' + projectId);
                 });
         },
