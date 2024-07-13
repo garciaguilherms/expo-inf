@@ -52,7 +52,7 @@
                                             <h4 class="font-bold">Autores Selecionados</h4>
                                             <ul>
                                                 <li v-for="userId in projectData.selectedAuthors" :key="userId">
-                                                    {{ getUserById(userId).name }}
+                                                    {{ getUserById(userId)?.name }}
                                                     <button @click="removeAuthor(userId)">Remover</button>
                                                 </li>
                                             </ul>
