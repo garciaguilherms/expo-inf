@@ -223,9 +223,11 @@ export default {
     display: flex;
     flex-direction: column;
     background-color: white;
-    width: 50%;
-    border-radius: 10px;
+    width: 90%; /* Alterado para 90% para dispositivos móveis */
+    max-width: 600px; /* Definir um máximo para evitar que fique muito largo */
     margin: 0 auto;
+    border-radius: 10px;
+    padding: 20px; /* Adicionado padding para melhor espaçamento */
 }
 .btn {
     padding: 10px 20px;
@@ -234,6 +236,7 @@ export default {
     background-color: #000000;
     color: white;
     cursor: pointer;
+    margin-top: 20px; /* Adicionado espaçamento acima do botão */
 }
 .btn:disabled {
     background-color: #555555;
