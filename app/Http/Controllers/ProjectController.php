@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\GoogleSheetService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -76,62 +77,73 @@ class ProjectController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'image' => 'required|url',
-            'author_id.*' => 'required|string',
-            'section_id' => 'required|string',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'title' => 'required|string',
+                'description' => 'required|string',
+                'image' => 'required|url',
+                'author_id.*' => 'required|string',
+                'section_id' => 'required|string',
+            ], [
+                'title.required' => 'O campo título é obrigatório.',
+                'description.required' => 'O campo descrição é obrigatório.',
+                'image.required' => 'O campo imagem de capa é obrigatório.',
+                'image.url' => 'O campo imagem deve ser uma URL válida.',
+                'author_id.*.required' => 'É necessário selecionar pelo menos um autor.',
+                'section_id.required' => 'O campo galeria é obrigatório.',
+            ]);
 
-        $projectData = [
-            'id' => uniqid(),
-            'title' => $validatedData['title'],
-            'description' => $validatedData['description'],
-            'image' => $validatedData['image'],
-            'author_id' => $validatedData['author_id'],
-            'section_id' => $validatedData['section_id'],
-            'created_at' => now()->toDateTimeString(),
-            'updated_at' => now()->toDateTimeString(),
-            'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
-        ];
+            $projectData = [
+                'id' => uniqid(),
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
+                'image' => $validatedData['image'],
+                'author_id' => $validatedData['author_id'],
+                'section_id' => $validatedData['section_id'],
+                'created_at' => now()->toDateTimeString(),
+                'updated_at' => now()->toDateTimeString(),
+                'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
+            ];
 
-        $this->googleSheetService->writeProjectSheet($this->projectSheetName, $projectData);
+            $this->googleSheetService->writeProjectSheet($this->projectSheetName, $projectData);
 
-        foreach ($validatedData['author_id'] as $authorId) {
-            $authorRow = $this->googleSheetService->findRowById('users', $authorId);
-            $authorData = $this->googleSheetService->readSheet('users')[$authorRow - 1];
-            $authorName = $authorData[1];
+            foreach ($validatedData['author_id'] as $authorId) {
+                $authorRow = $this->googleSheetService->findRowById('users', $authorId);
+                $authorData = $this->googleSheetService->readSheet('users')[$authorRow - 1];
+                $authorName = $authorData[1];
 
-            if ($authorRow) {
-                $authorData = [
-                    'id' => uniqid(),
-                    'project_id' => $projectData['id'],
-                    'user_id' => $authorId,
-                    'name' => $authorName,
-                    'created_at' => now()->toDateTimeString(),
-                    'updated_at' => now()->toDateTimeString()
-                ];
-                $this->googleSheetService->writeAuthor($authorData);
+                if ($authorRow) {
+                    $authorData = [
+                        'id' => uniqid(),
+                        'project_id' => $projectData['id'],
+                        'user_id' => $authorId,
+                        'name' => $authorName,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString()
+                    ];
+                    $this->googleSheetService->writeAuthor($authorData);
+                }
             }
-        }
 
-        $sectionId = $validatedData['section_id'];
+            $sectionId = $validatedData['section_id'];
 
-        if ($sectionId) {
-            $sectionRow = $this->googleSheetService->findRowById('sections', $sectionId);
-            if ($sectionRow) {
-                $sectionData = [
-                    'title' => $projectData['title'],
-                    'section_id' => $sectionId,
-                    'created_at' => now()->toDateTimeString(),
-                    'updated_at' => now()->toDateTimeString()
-                ];
-                $this->googleSheetService->writeSection($sectionData);
+            if ($sectionId) {
+                $sectionRow = $this->googleSheetService->findRowById('sections', $sectionId);
+                if ($sectionRow) {
+                    $sectionData = [
+                        'title' => $projectData['title'],
+                        'section_id' => $sectionId,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString()
+                    ];
+                    $this->googleSheetService->writeSection($sectionData);
+                }
             }
-        }
 
-        return response()->json(['message' => 'Projeto criado com sucesso!']);
+            return response()->json(['message' => 'Projeto criado com sucesso!']);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
     public function edit($rowIndex): Response
@@ -167,40 +179,51 @@ class ProjectController extends Controller
 
     public function update(Request $request, $projectId): JsonResponse
     {
-        // Obter dados do projeto do request
-        $projectData = [
-            'id' => $request->input('id'),
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'image' => $request->input('image'),
-            'section_id' => $request->input('section_id'),
-            'author_id' => $request->input('author_id'),
-            'created_at' => $request->input('created_at'),
-            'updated_at' => $request->input('updated_at') ?? now()->toDateTimeString(),
-            'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
-        ];
+        try {
+            $validatedData = $request->validate([
+                'title' => 'required|string',
+                'description' => 'required|string',
+                'image' => 'required|url',
+                'author_id.*' => 'required|string',
+                'section_id' => 'required|string',
+            ], [
+                'title.required' => 'O campo título é obrigatório.',
+                'description.required' => 'O campo descrição é obrigatório.',
+                'image.required' => 'O campo imagem é obrigatório.',
+                'image.url' => 'O campo imagem deve ser uma URL válida.',
+                'author_id.*.required' => 'É necessário selecionar pelo menos um autor.',
+                'section_id.required' => 'O campo galeria é obrigatório.',
+            ]);
 
-        // Remover chaves nulas e 'password' do array de dados do projeto
-        $projectData = array_filter($projectData, function ($key) {
-            return $key !== null && $key !== 'password';
-        });
+            $projectData = [
+                'id' => $request->input('id'),
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
+                'image' => $validatedData['image'],
+                'section_id' => $validatedData['section_id'],
+                'author_id' => $validatedData['author_id'],
+                'created_at' => $request->input('created_at'),
+                'updated_at' => $request->input('updated_at') ?? now()->toDateTimeString(),
+                'background_image' => $request->input('background_image') ?? 'Sem capa de fundo'
+            ];
 
-        // Encontrar o índice da linha do projeto na planilha
-        $rowIndex = $this->googleSheetService->findRowIndexById($projectId, $this->projectSheetName);
+            $rowIndex = $this->googleSheetService->findRowIndexById($projectId, $this->projectSheetName);
 
-        if ($rowIndex === null) {
-            return response()->json(['message' => 'Projeto não encontrado.'], 404);
+            if ($rowIndex === null) {
+                return response()->json(['message' => 'Projeto não encontrado.'], 404);
+            }
+
+            $authorIds = is_array($projectData['author_id']) ? implode(',', $projectData['author_id']) : $projectData['author_id'];
+            $projectData['author_id'] = $authorIds;
+
+            $this->googleSheetService->updateSheet($this->projectSheetName, $rowIndex, $projectData);
+
+            return response()->json(['message' => 'Projeto atualizado com sucesso.']);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
         }
-
-        // Converter array de IDs de autores em string separada por vírgula
-        $authorIds = is_array($projectData['author_id']) ? implode(',', $projectData['author_id']) : $projectData['author_id'];
-        $projectData['author_id'] = $authorIds;
-
-        // Atualizar a planilha com os novos dados do projeto
-        $this->googleSheetService->updateSheet($this->projectSheetName, $rowIndex, $projectData);
-
-        return response()->json(['message' => 'Projeto atualizado com sucesso.']);
     }
+
 
     public function destroy($rowIndex): void
     {

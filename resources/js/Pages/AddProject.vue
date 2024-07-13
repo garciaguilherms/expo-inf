@@ -9,13 +9,12 @@
                             <div class="row justify-content-center">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="title">Título</label>
+                                        <label class="required:" for="title">Título</label>
                                         <input
                                             type="text"
                                             class="form-control"
                                             id="title"
                                             v-model="projectData.title"
-                                            required
                                         />
                                     </div>
                                     <div class="form-group">
@@ -29,7 +28,6 @@
                                             class="form-control"
                                             id="image"
                                             v-model="projectData.image"
-                                            required
                                         />
                                     </div>
                                     <div class="form-group-author">
@@ -62,12 +60,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="section_id">Galeria</label>
-                                        <select
-                                            class="form-control"
-                                            id="section_id"
-                                            v-model="projectData.section_id"
-                                            required
-                                        >
+                                        <select class="form-control" id="section_id" v-model="projectData.section_id">
                                             <option value="" disabled>Selecione a galeria</option>
                                             <option v-for="section in sections" :key="section.id" :value="section.id">
                                                 {{ section.title }}
@@ -116,6 +109,7 @@ export default {
                       section_id: '',
                   },
             isLoading: false,
+            errors: {},
         };
     },
     props: ['initialProjectData', 'isEditing'],
@@ -151,11 +145,15 @@ export default {
                     useToastr().success('Projeto criado com sucesso!');
                     this.$inertia.get('/');
                 })
-                .catch(() => {
-                    useToastr().error('Erro ao criar projeto!');
-                    this.isLoading = false;
-                })
-                .finally(() => {
+                .catch(error => {
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                        for (const key in this.errors) {
+                            this.errors[key].forEach(errorMsg => useToastr().error(errorMsg));
+                        }
+                    } else {
+                        useToastr().error('Erro ao criar projeto!');
+                    }
                     this.isLoading = false;
                 });
         },
@@ -168,10 +166,15 @@ export default {
                     useToastr().success('Projeto atualizado com sucesso!');
                     this.$inertia.get('/');
                 })
-                .catch(() => {
-                    useToastr().error('Erro ao atualizar projeto!');
-                })
-                .finally(() => {
+                .catch(error => {
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                        for (const key in this.errors) {
+                            this.errors[key].forEach(errorMsg => useToastr().error(errorMsg));
+                        }
+                    } else {
+                        useToastr().error('Erro ao atualizar projeto!');
+                    }
                     this.isLoading = false;
                 });
         },
