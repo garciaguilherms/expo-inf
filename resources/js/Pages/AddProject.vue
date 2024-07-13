@@ -34,16 +34,30 @@
                                     </div>
                                     <div class="form-group-author">
                                         <label>Autores</label>
-                                        <div>
-                                            <label v-for="user in users" :key="user.id">
+                                        <input
+                                            type="text"
+                                            class="form-control search-authors"
+                                            placeholder="Buscar autor"
+                                            v-model="searchQuery"
+                                        />
+                                        <div v-if="searchQuery" class="author-list">
+                                            <label v-for="user in filteredUsers" :key="user.id" class="author-checkbox">
                                                 <input
                                                     type="checkbox"
                                                     v-model="projectData.selectedAuthors"
                                                     :value="user.id"
-                                                    class="form-group-author-name"
                                                 />
                                                 {{ user.name }}
                                             </label>
+                                        </div>
+                                        <div class="selected-authors" v-if="projectData.selectedAuthors.length">
+                                            <h4 class="font-bold">Autores Selecionados</h4>
+                                            <ul>
+                                                <li v-for="userId in projectData.selectedAuthors" :key="userId">
+                                                    {{ getUserById(userId).name }}
+                                                    <button @click="removeAuthor(userId)">Remover</button>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -88,6 +102,7 @@ import TipTap from '@/Components/TipTap.vue';
 export default {
     data() {
         return {
+            searchQuery: '',
             projectData: this.isEditing
                 ? {
                       ...this.initialProjectData,
@@ -121,6 +136,9 @@ export default {
         }),
         sections() {
             return this.$store.state.sections.sections;
+        },
+        filteredUsers() {
+            return this.users.filter(user => user.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
         },
     },
     methods: {
@@ -156,6 +174,12 @@ export default {
                 .finally(() => {
                     this.isLoading = false;
                 });
+        },
+        getUserById(id) {
+            return this.users.find(user => user.id === id);
+        },
+        removeAuthor(id) {
+            this.projectData.selectedAuthors = this.projectData.selectedAuthors.filter(authorId => authorId !== id);
         },
     },
 };
@@ -211,5 +235,45 @@ export default {
 .btn:disabled {
     background-color: #555555;
     cursor: not-allowed;
+}
+.search-authors {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.author-list {
+    padding: 10px 0;
+}
+.author-checkbox {
+    display: block;
+    margin-bottom: 5px;
+}
+.selected-authors {
+    margin-top: 20px;
+}
+.selected-authors h4 {
+    margin-bottom: 10px;
+}
+.selected-authors ul {
+    list-style-type: none;
+    padding: 0;
+}
+.selected-authors li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+.selected-authors button {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 </style>
