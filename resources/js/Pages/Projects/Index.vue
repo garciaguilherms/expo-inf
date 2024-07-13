@@ -57,7 +57,7 @@
                         </div>
                         <div class="project-info">
                             <h2 class="project-title">{{ project.title }}</h2>
-                            <p class="project-author">Criado em {{ formatDate(project.created_at) }}</p>
+                            <p class="project-author">Criado {{ formatDate(project.created_at) }}</p>
                             <p class="project-author">
                                 Autores:
                                 <template v-if="project.authors && project.authors.length > 0">
@@ -253,9 +253,10 @@ input {
 }
 
 .project-image {
-    height: 300px;
+    width: 100%; /* Defina a largura desejada */
+    height: 200px; /* Defina a altura desejada */
     border-radius: 8px;
-    object-fit: cover;
+    object-fit: cover; /* Mantém proporção e cobre o espaço */
     margin-bottom: 10px;
 }
 
