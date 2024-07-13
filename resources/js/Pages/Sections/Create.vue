@@ -26,7 +26,7 @@
                                 ></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="tag">Tag</label>
+                                <label for="tag">Tag (ex: ufsm; disciplina; projetos; etc...)</label>
                                 <input type="text" class="form-control" id="tag" v-model="sectionData.tags" required />
                             </div>
                             <button v-if="!isEditing" type="submit" class="btn btn-primary" :disabled="isLoading">
@@ -49,6 +49,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { useToastr } from '@/toastr';
+
 export default {
     components: {
         AuthenticatedLayout,
@@ -87,7 +88,6 @@ export default {
                 })
                 .catch(() => {
                     useToastr().error('Erro ao atualizar galeria!');
-                    this.isLoading = false;
                 })
                 .finally(() => {
                     this.isLoading = false;
