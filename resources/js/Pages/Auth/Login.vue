@@ -12,6 +12,10 @@ defineProps({
     status: {
         type: String,
     },
+    errors: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = useForm({
@@ -48,7 +52,7 @@ const submit = () => {
                     autocomplete="username"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-2" :message="errors.email" />
             </div>
 
             <div class="mt-4">
@@ -63,7 +67,7 @@ const submit = () => {
                     autocomplete="current-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError class="mt-2" :message="errors.password" />
             </div>
 
             <div class="flex mt-4 items-center justify-center">
@@ -74,7 +78,7 @@ const submit = () => {
 
             <div class="flex mt-4 items-center justify-center">
                 <a href="/auth/google/redirect" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Entrar com Google
+                    Entrar com e-mail institucional (@inf.ufsm.br)
                 </a>
             </div>
 

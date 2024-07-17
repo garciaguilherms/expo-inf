@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 
-
 class ProviderController extends Controller
 {
     protected UserRepository $userRepository;
@@ -28,6 +27,13 @@ class ProviderController extends Controller
     {
         $socialUser = Socialite::driver($provider)->user();
 
+        $allowedDomain = 'inf.ufsm.br';
+        $emailDomain = substr($socialUser->getEmail(), strpos($socialUser->getEmail(), '@') + 1);
+
+        if ($emailDomain !== $allowedDomain) {
+            return redirect()->route('login')->withErrors(['email' => 'Apenas domínios @inf.ufsm.br são permitidos ao entrar com Google.']);
+        }
+
         $existingUser = $this->userRepository->getUserByEmail($socialUser->getEmail());
         if ($existingUser !== null) {
             $user = $existingUser;
@@ -39,7 +45,7 @@ class ProviderController extends Controller
                 'name' => $socialUser->getName(),
                 'email' => $socialUser->getEmail(),
                 'password' => null,
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => now(),
                 'provider_id' => $socialUser->getId(),
                 'provider' => $provider,
                 'provider_token' => $socialUser->token,
@@ -50,6 +56,7 @@ class ProviderController extends Controller
             $user = (object) $userData;
         }
 
+        // Log in the user
         if (is_array($user)) {
             $user = (object) $user;
         }
