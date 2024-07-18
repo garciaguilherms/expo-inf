@@ -36,7 +36,11 @@
                                 style="word-wrap: break-word"
                                 v-html="project.description"
                             ></div>
-                            <form class="comment-form" @submit.prevent="postComment(project.id)">
+                            <form
+                                v-if="$page.props.auth.user"
+                                class="comment-form"
+                                @submit.prevent="postComment(project.id)"
+                            >
                                 <textarea
                                     class="comment-input"
                                     placeholder="Deixe seu comentário aqui..."
