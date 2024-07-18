@@ -4,7 +4,7 @@
             <h3>Personalização da página do projeto:</h3>
         </div>
         <div class="form-group">
-            <label for="background_image">Imagem de fundo (URL)</label>
+            <label for="background_image">Imagem de fundo (Endereço da Imagem URL)</label>
             <input type="text" class="form-control" id="background_image" v-model="projectData.background_image" />
         </div>
     </div>

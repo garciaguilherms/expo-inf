@@ -22,7 +22,7 @@
                                         <TipTap v-model="projectData.description" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="image">Imagem de capa (URL)</label>
+                                        <label for="image">Imagem de capa (Endereço da Imagem URL)</label>
                                         <input
                                             type="text"
                                             class="form-control"
