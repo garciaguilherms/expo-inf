@@ -11,7 +11,7 @@
                 :disabled="!editor.can().chain().focus().toggleBold().run()"
                 :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('bold') }"
             >
-                bold
+                <font-awesome-icon :icon="['fas', 'bold']" size="sm" />
             </button>
             <button
                 type="button"
@@ -20,7 +20,7 @@
                 :disabled="!editor.can().chain().focus().toggleItalic().run()"
                 :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('italic') }"
             >
-                italic
+                <font-awesome-icon :icon="['fas', 'italic']" size="sm" />
             </button>
             <button
                 type="button"
@@ -29,7 +29,7 @@
                 :disabled="!editor.can().chain().focus().toggleCode().run()"
                 :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('code') }"
             >
-                code
+                <font-awesome-icon :icon="['fas', 'code']" size="sm" />
             </button>
             <button
                 type="button"
@@ -39,7 +39,7 @@
                     'bg-gray-400 rounded-md p-1': editor.isActive('heading', { level: 1 }),
                 }"
             >
-                h1
+                <strong>H1</strong>
             </button>
             <button
                 type="button"
@@ -49,7 +49,7 @@
                     'bg-gray-400 rounded-md p-1': editor.isActive('heading', { level: 2 }),
                 }"
             >
-                h2
+                <strong>H2</strong>
             </button>
             <button
                 type="button"
@@ -59,7 +59,7 @@
                     'bg-gray-400 rounded-md p-1': editor.isActive('heading', { level: 3 }),
                 }"
             >
-                h3
+                <strong>H3</strong>
             </button>
             <button
                 type="button"
@@ -67,7 +67,7 @@
                 class="rounded-md p-1"
                 :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('bulletList') }"
             >
-                bullet list
+                <font-awesome-icon :icon="['fas', 'list']" size="sm" />
             </button>
             <button
                 type="button"
@@ -75,7 +75,18 @@
                 class="rounded-md p-1"
                 :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('orderedList') }"
             >
-                ordered list
+                <font-awesome-icon :icon="['fas', 'list-ol']" size="sm" />
+            </button>
+            <button type="button" @click="setLink()" class="rounded-md p-1">
+                <font-awesome-icon :icon="['fas', 'link']" />
+            </button>
+            <button
+                type="button"
+                @click="unsetLink()"
+                class="rounded-md p-1"
+                :class="{ 'bg-gray-400 rounded-md p-1': editor.isActive('link') }"
+            >
+                <font-awesome-icon :icon="['fas', 'link-slash']" />
             </button>
         </section>
     </div>
@@ -85,6 +96,7 @@
 <script>
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
 
 export default {
     name: 'TipTap',
@@ -104,7 +116,12 @@ export default {
                 onUpdate: ({ editor }) => {
                     this.$emit('update:modelValue', editor.getHTML());
                 },
-                extensions: [StarterKit],
+                extensions: [
+                    StarterKit,
+                    Link.configure({
+                        openOnClick: false,
+                    }),
+                ],
                 editorProps: {
                     attributes: {
                         class: 'border border-gray-300 p-2 rounded-md min-h-[300px] max-h-[300px] overflow-auto prose max-w-none',
@@ -115,6 +132,17 @@ export default {
                 },
             }),
         };
+    },
+    methods: {
+        setLink() {
+            const url = prompt('Enter the URL');
+            if (url) {
+                this.editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+            }
+        },
+        unsetLink() {
+            this.editor.chain().focus().unsetLink().run();
+        },
     },
 };
 </script>

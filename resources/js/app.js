@@ -11,9 +11,37 @@ import projects from './store/modules/projects';
 import users from './store/modules/users';
 import sections from './store/modules/sections';
 
-import { faUserSecret, faComment, faStar, faTrash, faEllipsisV, faReply } from '@fortawesome/free-solid-svg-icons';
+import {
+    faUserSecret,
+    faComment,
+    faStar,
+    faTrash,
+    faEllipsisV,
+    faReply,
+    faList,
+    faListOl,
+    faBold,
+    faItalic,
+    faCode,
+    faLink,
+    faLinkSlash,
+} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faUserSecret, faComment, faStar, faTrash, faEllipsisV, faReply);
+library.add(
+    faUserSecret,
+    faComment,
+    faStar,
+    faTrash,
+    faEllipsisV,
+    faReply,
+    faList,
+    faListOl,
+    faBold,
+    faItalic,
+    faCode,
+    faLink,
+    faLinkSlash,
+);
 
 const store = createStore({
     modules: {
