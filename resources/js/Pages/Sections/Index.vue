@@ -40,7 +40,7 @@
                     <div class="delete-overlay" v-if="section.deleting">Excluindo...</div>
                     <div class="section-content">
                         <div class="section-info">
-                            <h2 class="section-title" @click="$inertia.visit('/sections/' + section.id)">
+                            <h2 class="section-title" @click="$inertia.visit('/galleries/' + section.id)">
                                 {{ section.title }}
                             </h2>
                             <p class="section-subtitle" v-if="section.projects && Object.keys(section.projects).length">
@@ -115,7 +115,7 @@ export default {
         deleteSection(id) {
             this.deletingSectionId = id;
             axios
-                .delete('/sections/' + id)
+                .delete('/galleries/' + id)
                 .then(() => {
                     this.sectionList = this.sectionList.filter(section => section.id !== id);
                 })
@@ -124,16 +124,16 @@ export default {
                 })
                 .finally(() => {
                     useToastr().success('Galeria excluída com sucesso!');
-                    this.$inertia.get('/sections');
+                    this.$inertia.get('/galleries');
                     this.deletingSectionId = null;
                 });
         },
         updateSection(id) {
-            this.$inertia.visit('/sections/' + id + '/edit');
+            this.$inertia.visit('/galleries/' + id + '/edit');
         },
         searchSections() {
             axios
-                .get('/sections/search', {
+                .get('/galleries/search', {
                     params: { term: this.term },
                 })
                 .then(response => {
@@ -163,12 +163,11 @@ export default {
 .section-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin: 0 auto; /* Remova margem para evitar espaços extras */
+    align-items: center; /* Alinha o conteúdo centralizado horizontalmente */
     padding: 20px;
     max-width: 1200px;
     min-height: 100vh; /* Garante que o container ocupe toda a altura da viewport */
+    margin: 0 auto; /* Centraliza o container na tela */
 }
 
 .section-grid {
@@ -176,7 +175,7 @@ export default {
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 20px;
     list-style: none;
-    align-content: center;
+    width: 100%; /* Garante que a grade ocupe 100% da largura do container */
 }
 
 .section-item {
@@ -309,8 +308,7 @@ export default {
     border-radius: 8px;
     width: 100%;
     max-width: 500px;
-    min-width: 500px;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 .input-wrapper {
@@ -328,7 +326,6 @@ export default {
 
 .btn {
     margin-left: 10px;
-    margin-top: 1px;
     padding: 10px;
     border-radius: 5px;
     border: none;
@@ -372,7 +369,6 @@ export default {
     .search-box {
         width: 100%;
         max-width: 100%;
-        min-width: 100%;
         margin: 0 auto;
         padding: 10px;
         box-sizing: border-box;

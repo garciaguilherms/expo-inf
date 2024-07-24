@@ -70,7 +70,7 @@ export default {
                 .then(() => {
                     useToastr().success('Galeria criada com sucesso!');
                     this.isLoading = false;
-                    this.$inertia.get('/sections');
+                    this.$inertia.get('/galleries');
                 })
                 .catch(error => {
                     useToastr().error('Erro ao criar galeria!');
@@ -91,7 +91,7 @@ export default {
                 })
                 .finally(() => {
                     this.isLoading = false;
-                    this.$inertia.get('/sections');
+                    this.$inertia.get('/galleries');
                 });
         },
     },

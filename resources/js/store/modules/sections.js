@@ -44,7 +44,7 @@ const actions = {
     addSection({ commit }, sectionData) {
         return new Promise((resolve, reject) => {
             axios
-                .post('/sections', sectionData)
+                .post('/galleries', sectionData)
                 .then(response => {
                     commit('setSections', response.data);
                     resolve(response.data);
@@ -57,7 +57,7 @@ const actions = {
     updateSection({ commit }, sectionData) {
         return new Promise((resolve, reject) => {
             axios
-                .put('/sections/' + sectionData.id, sectionData)
+                .put('/galleries/' + sectionData.id, sectionData)
                 .then(response => {
                     commit('setSections', response.data);
                     resolve(response.data);

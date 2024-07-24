@@ -75,32 +75,32 @@ Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
 
 
 //Sections
-Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
+Route::get('/galleries', [SectionController::class, 'index'])->name('sections.index');
 
 Route::get('/all-sections', [SectionController::class, 'allSections'])->name('sections.allSections');
 
-Route::get('/sections/search', [SectionController::class, 'search'])->name('sections.search');
+Route::get('/galleries/search', [SectionController::class, 'search'])->name('sections.search');
 
-Route::get('/sections/create', [SectionController::class, 'create'])
+Route::get('/galleries/create', [SectionController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('sections.create');
 
-Route::post('/sections', [SectionController::class, 'store'])
+Route::post('/galleries', [SectionController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('sections.store');
 
-Route::get('/sections/{section}', [SectionController::class, 'show'])
+Route::get('/galleries/{galery}', [SectionController::class, 'show'])
     ->name('sections.show');
 
-Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])
+Route::get('/galleries/{galery}/edit', [SectionController::class, 'edit'])
     ->middleware(['auth', 'verified'])
     ->name('sections.edit');
 
-Route::put('/sections/{section}', [SectionController::class, 'update'])
+Route::put('/galleries/{galery}', [SectionController::class, 'update'])
     ->middleware(['auth', 'verified'])
     ->name('sections.update');
 
-Route::delete('/sections/{section}', [SectionController::class, 'destroy'])
+Route::delete('/galleries/{galery}', [SectionController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('sections.destroy');
 

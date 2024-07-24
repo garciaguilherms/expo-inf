@@ -259,10 +259,10 @@ input {
 }
 
 .project-image {
-    width: 100%; /* Defina a largura desejada */
-    height: 200px; /* Defina a altura desejada */
+    width: 100%;
+    height: 200px;
     border-radius: 8px;
-    object-fit: cover; /* Mantém proporção e cobre o espaço */
+    object-fit: cover;
     margin-bottom: 10px;
 }
 
