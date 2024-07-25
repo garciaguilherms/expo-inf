@@ -15,6 +15,7 @@
                 <button @click="searchSections" class="btn">Pesquisar</button>
             </div>
             <ul class="section-grid">
+                <li v-if="processedSections.length === 0" class="no-results">Nenhuma galeria encontrada</li>
                 <li v-for="section in processedSections" :key="section.id" class="section-item">
                     <Dropdown
                         align="right"
@@ -163,11 +164,11 @@ export default {
 .section-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Alinha o conteúdo centralizado horizontalmente */
+    align-items: center;
     padding: 20px;
     max-width: 1200px;
-    min-height: 100vh; /* Garante que o container ocupe toda a altura da viewport */
-    margin: 0 auto; /* Centraliza o container na tela */
+    min-height: 100vh;
+    margin: 0 auto;
 }
 
 .section-grid {
@@ -175,7 +176,14 @@ export default {
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 20px;
     list-style: none;
-    width: 100%; /* Garante que a grade ocupe 100% da largura do container */
+    width: 100%;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 18px;
+    color: #888;
 }
 
 .section-item {

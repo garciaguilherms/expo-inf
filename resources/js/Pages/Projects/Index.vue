@@ -15,6 +15,7 @@
         </div>
         <div class="project-list">
             <ul class="flex justify-center md:flex-row flex-wrap p-0 m-8 gap-4 list-none">
+                <li v-if="projectList.length === 0" class="no-results">Nenhum projeto encontrado</li>
                 <li
                     v-for="project in projectList"
                     :key="project.id"
@@ -236,6 +237,13 @@ input {
 .project-list {
     display: flex;
     justify-content: center;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 18px;
+    color: #888;
 }
 
 .project-item {
